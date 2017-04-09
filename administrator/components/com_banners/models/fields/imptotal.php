@@ -10,7 +10,7 @@
 defined('JPATH_BASE') or die;
 
 /**
- * Impressions Field class for the Joomla Framework.
+ * Total Impressions field.
  *
  * @since  1.6
  */
@@ -42,8 +42,8 @@ class JFormFieldImpTotal extends JFormField
 		$checked  = empty($this->value) ? ' checked="checked"' : '';
 
 		return '<input type="text" name="' . $this->name . '" id="' . $this->id . '" size="9" value="' . htmlspecialchars($value, ENT_COMPAT, 'UTF-8')
-			. '" ' . $class . $onchange . ' />'
-			. '<fieldset class="checkboxes impunlimited"><input id="' . $this->id . '_unlimited" type="checkbox"' . $checked . $onclick . ' />'
+			. '" ' . $class . $onchange . '>'
+			. '<fieldset class="checkbox impunlimited"><input id="' . $this->id . '_unlimited" type="checkbox"' . $checked . $onclick . '>'
 			. '<label for="' . $this->id . '_unlimited" id="jform-imp" type="text">' . JText::_('COM_BANNERS_UNLIMITED') . '</label></fieldset>';
 	}
 }

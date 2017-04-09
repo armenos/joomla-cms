@@ -33,15 +33,7 @@ $script = "
 	Joomla.submitbutton = function(task) {
 			if (task == 'module.cancel' || document.formvalidator.isValid(document.getElementById('module-form')))
 			{
-";
-if ($hasContent)
-{
-	$script .= $this->form->getField($hasContentFieldName)->save();
-}
-$script .= "
 			Joomla.submitform(task, document.getElementById('module-form'));
-
-				jQuery('#permissions-sliders select').attr('disabled', 'disabled');
 
 				if (self != top)
 				{
@@ -185,7 +177,7 @@ $tmpl    = $isModal || $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=c
 							?>
 						</h3>
 						<div class="info-labels">
-							<span class="badge badge-default hasTooltip" title="<?php echo JHtml::tooltipText('COM_MODULES_FIELD_CLIENT_ID_LABEL'); ?>">
+							<span class="badge badge-default hasTooltip" title="<?php echo JHtml::_('tooltipText', 'COM_MODULES_FIELD_CLIENT_ID_LABEL'); ?>">
 								<?php echo $this->item->client_id == 0 ? JText::_('JSITE') : JText::_('JADMINISTRATOR'); ?>
 							</span>
 						</div>
@@ -232,7 +224,7 @@ $tmpl    = $isModal || $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=c
 				}
 				$this->fieldset = 'basic';
 				$html = JLayoutHelper::render('joomla.edit.fieldset', $this);
-				echo $html ? '<hr />' . $html : '';
+				echo $html ? '<hr>' . $html : '';
 				?>
 			</div>
 			<div class="col-md-3">
@@ -293,7 +285,7 @@ $tmpl    = $isModal || $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=c
 
 		<?php echo JHtml::_('bootstrap.endTabSet'); ?>
 
-		<input type="hidden" name="task" value="" />
+		<input type="hidden" name="task" value="">
 		<?php echo JHtml::_('form.token'); ?>
 		<?php echo $this->form->getInput('module'); ?>
 		<?php echo $this->form->getInput('client_id'); ?>

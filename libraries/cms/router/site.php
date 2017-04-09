@@ -52,8 +52,8 @@ class JRouterSite extends JRouter
 	 */
 	public function __construct(JApplicationCms $app = null, JMenu $menu = null)
 	{
-		$this->app  = $app ? $app : JApplicationCms::getInstance('site');
-		$this->menu = $menu ? $menu : $this->app->getMenu();
+		$this->app  = $app ?: JApplicationCms::getInstance('site');
+		$this->menu = $menu ?: $this->app->getMenu();
 
 		// Add core rules
 		if ($this->app->get('force_ssl') == 2)
@@ -65,7 +65,7 @@ class JRouterSite extends JRouter
 		$this->attachBuildRule(array($this, 'buildInit'), self::PROCESS_BEFORE);
 		$this->attachBuildRule(array($this, 'buildComponentPreprocess'), self::PROCESS_BEFORE);
 
-		if ($this->app->get('sef'))
+		if ($this->app->get('sef', 1))
 		{
 			if ($this->app->get('sef_suffix'))
 			{
@@ -131,7 +131,7 @@ class JRouterSite extends JRouter
 		if (preg_match("#.*?\.php#u", $path, $matches))
 		{
 			// Get the current entry point path relative to the site path.
-			$scriptPath         = realpath($_SERVER['SCRIPT_FILENAME'] ? $_SERVER['SCRIPT_FILENAME'] : str_replace('\\\\', '\\', $_SERVER['PATH_TRANSLATED']));
+			$scriptPath         = realpath($_SERVER['SCRIPT_FILENAME'] ?: str_replace('\\\\', '\\', $_SERVER['PATH_TRANSLATED']));
 			$relativeScriptPath = str_replace('\\', '/', str_replace(JPATH_SITE, '', $scriptPath));
 
 			// If a php file has been found in the request path, check to see if it is a valid file.
@@ -539,7 +539,7 @@ class JRouterSite extends JRouter
 	}
 
 	/**
-	 * Cleanup the URL build
+	 * Create a uri based on a full or partial URL string
 	 *
 	 * @param   JRouterSite  &$router  Router object
 	 * @param   JUri         &$uri     URI object to process
@@ -600,15 +600,21 @@ class JRouterSite extends JRouter
 
 			if (!class_exists($class))
 			{
-				// Add the custom routing handler to the autoloader if it exists
-				JLoader::register($class, JPATH_SITE . '/components/' . $component . '/router.php');
+				// Use the component routing handler if it exists
+				$path = JPATH_SITE . '/components/' . $component . '/router.php';
+
+				// Use the custom routing handler if it exists
+				if (file_exists($path))
+				{
+					require_once $path;
+				}
 			}
 
 			if (class_exists($class))
 			{
 				$reflection = new ReflectionClass($class);
 
-				if (in_array('JComponentRouterInterface', $reflection->getInterfaceNames()))
+				if (in_array('Joomla\\CMS\\Component\\Router\\RouterInterface', $reflection->getInterfaceNames()))
 				{
 					$this->componentRouters[$component] = new $class($this->app, $this->menu);
 				}
@@ -637,7 +643,7 @@ class JRouterSite extends JRouter
 	{
 		$reflection = new ReflectionClass($router);
 
-		if (in_array('JComponentRouterInterface', $reflection->getInterfaceNames()))
+		if (in_array('Joomla\\CMS\\Component\\Router\\RouterInterface', $reflection->getInterfaceNames()))
 		{
 			$this->componentRouters[$component] = $router;
 

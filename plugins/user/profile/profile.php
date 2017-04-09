@@ -83,7 +83,7 @@ class PlgUserProfile extends JPlugin
 					)
 					->from('#__user_profiles')
 					->where($db->qn('user_id') . ' = ' . $db->q((int) $userId))
-					->where($db->qn('profile_key') . ' LIKE ' . $db->qn('profile.%'))
+					->where($db->qn('profile_key') . ' LIKE ' . $db->q('profile.%'))
 					->order($db->qn('ordering'));
 
 				$db->setQuery($query);
@@ -131,7 +131,7 @@ class PlgUserProfile extends JPlugin
 	/**
 	 * Returns an anchor tag generated from a given value
 	 *
-	 * @param   string  $value  url to use
+	 * @param   string  $value  URL to use
 	 *
 	 * @return mixed|string
 	 */
@@ -143,7 +143,7 @@ class PlgUserProfile extends JPlugin
 		}
 		else
 		{
-			// Convert website url to utf8 for display
+			// Convert website URL to utf8 for display
 			$value = JStringPunycode::urlToUTF8(htmlspecialchars($value));
 
 			if (substr($value, 0, 4) === 'http')
@@ -330,6 +330,14 @@ class PlgUserProfile extends JPlugin
 			}
 		}
 
+		// Drop the profile form entirely if there aren't any fields to display.
+		$remainingfields = $form->getGroup('profile');
+
+		if (!count($remainingfields))
+		{
+			$form->removeGroup('profile');
+		}
+
 		return true;
 	}
 
@@ -416,7 +424,7 @@ class PlgUserProfile extends JPlugin
 
 			foreach ($data['profile'] as $k => $v)
 			{
-				$tuples[] = '(' . $userId . ', ' . $db->quote('profile.' . $k) . ', ' . $db->quote(json_encode($v)) . ', ' . ($order++) . ')';
+				$tuples[] = $userId . ', ' . $db->quote('profile.' . $k) . ', ' . $db->quote(json_encode($v)) . ', ' . ($order++);
 			}
 
 			$query = $db->getQuery(true)
@@ -452,6 +460,7 @@ class PlgUserProfile extends JPlugin
 
 		if ($userId)
 		{
+			$db = JFactory::getDbo();
 			$query = $db->getQuery(true)
 				->delete($db->qn('#__user_profiles'))
 				->where($db->qn('user_id') . ' = ' . $db->q((int) $userId))

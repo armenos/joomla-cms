@@ -70,9 +70,7 @@ JFactory::getDocument()->addScriptDeclaration($script);
 					autocomplete="off" placeholder="<?php echo JText::_('JSEARCH_FILTER'); ?>" aria-invalid="false" tabindex="-1">
 			</div>
 
-			<div class="clearfix"></div>
-
-			<hr class="hr-condensed">
+			<hr>
 
 			<ul class="treeselect">
 				<?php foreach ($menuTypes as &$type) : ?>
@@ -109,7 +107,7 @@ JFactory::getDocument()->addScriptDeclaration($script);
 									<?php
 									$uselessMenuItem = (in_array($link->type, array('separator', 'heading', 'alias', 'url')));
 									?>
-									<input type="checkbox" class="float-left novalidate" name="jform[assigned][]" id="<?php echo $id . $link->value; ?>" value="<?php echo (int) $link->value; ?>"<?php echo $selected ? ' checked="checked"' : ''; echo $uselessMenuItem ? ' disabled="disabled"' : ''; ?> />
+									<input type="checkbox" class="float-left novalidate" name="jform[assigned][]" id="<?php echo $id . $link->value; ?>" value="<?php echo (int) $link->value; ?>"<?php echo $selected ? ' checked="checked"' : ''; echo $uselessMenuItem ? ' disabled="disabled"' : ''; ?>>
 									<label for="<?php echo $id . $link->value; ?>" class="float-left">
 										<?php echo $link->text; ?> <span class="small"><?php echo JText::sprintf('JGLOBAL_LIST_ALIAS', $this->escape($link->alias)); ?></span>
 										<?php if (JLanguageMultilang::isEnabled() && $link->language != '' && $link->language != '*') : ?>
@@ -152,12 +150,12 @@ JFactory::getDocument()->addScriptDeclaration($script);
 						<div class="dropdown-menu">
 							<h5 class="dropdown-header"><?php echo JText::_('COM_MODULES_SUBITEMS'); ?></h5>
 							<div class="dropdown-divider"></div>
-							<a class="dropdown-item checkall" href="javascript://"><span class="icon-checkbox"></span> <?php echo JText::_('JSELECT'); ?></a>
-							<a class="dropdown-item uncheckall" href="javascript://"><span class="icon-checkbox-unchecked"></span> <?php echo JText::_('COM_MODULES_DESELECT'); ?></a>
+							<a class="dropdown-item checkall" href="javascript://"><span class="icon-checkbox" aria-hidden="true"></span> <?php echo JText::_('JSELECT'); ?></a>
+							<a class="dropdown-item uncheckall" href="javascript://"><span class="icon-checkbox-unchecked" aria-hidden="true"></span> <?php echo JText::_('COM_MODULES_DESELECT'); ?></a>
 							<div class="treeselect-menu-expand">
 								<div class="dropdown-divider"></div>
-								<a class="dropdown-item expandall" href="javascript://"><span class="icon-plus"></span> <?php echo JText::_('COM_MODULES_EXPAND'); ?></a>
-								<a class="dropdown-item collapseall" href="javascript://"><span class="icon-minus"></span> <?php echo JText::_('COM_MODULES_COLLAPSE'); ?></a>
+								<a class="dropdown-item expandall" href="javascript://"><span class="icon-plus" aria-hidden="true"></span> <?php echo JText::_('COM_MODULES_EXPAND'); ?></a>
+								<a class="dropdown-item collapseall" href="javascript://"><span class="icon-minus" aria-hidden="true"></span> <?php echo JText::_('COM_MODULES_COLLAPSE'); ?></a>
 							</div>
 						</div>
 					</div>

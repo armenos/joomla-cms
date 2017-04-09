@@ -38,13 +38,6 @@ JFactory::getDocument()->addScriptDeclaration('
 			$(this).removeClass("invalid");
 		});
 	});
-
-	Joomla.submitbutton = function(task) {
-		if (task == "override.cancel" || document.formvalidator.isValid(document.getElementById("override-form")))
-		{
-			Joomla.submitform(task, document.getElementById("override-form"));
-		}
-	};
 ');
 ?>
 
@@ -147,8 +140,8 @@ JFactory::getDocument()->addScriptDeclaration('
 				</span>
 			</fieldset>
 
-			<input type="hidden" name="task" value="" />
-			<input type="hidden" name="id" value="<?php echo $this->item->key; ?>" />
+			<input type="hidden" name="task" value="">
+			<input type="hidden" name="id" value="<?php echo $this->item->key; ?>">
 
 			<?php echo JHtml::_('form.token'); ?>
 		</div>

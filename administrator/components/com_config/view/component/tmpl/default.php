@@ -17,6 +17,7 @@ JHtml::_('bootstrap.tooltip');
 JHtml::_('behavior.formvalidator');
 JHtml::_('behavior.keepalive');
 JHtml::_('behavior.tabstate');
+JHtml::_('formbehavior.chosen', '.chzn-custom-value', null, array('disable_search_threshold' => 0));
 
 // Load JS message titles
 JText::script('ERROR');
@@ -26,15 +27,6 @@ JText::script('MESSAGE');
 
 JFactory::getDocument()->addScriptDeclaration(
 	'
-	Joomla.submitbutton = function(task)
-	{
-		if (task === "config.cancel.component" || document.formvalidator.isValid(document.getElementById("component-form")))
-		{
-			jQuery("#permissions-sliders select").attr("disabled", "disabled");
-			Joomla.submitform(task, document.getElementById("component-form"));
-		}
-	};
-
 	// Select first tab
 	jQuery(document).ready(function() {
 		jQuery("#configTabs a:first").tab("show");
@@ -42,7 +34,7 @@ JFactory::getDocument()->addScriptDeclaration(
 );
 ?>
 
-<form action="<?php echo JRoute::_('index.php?option=com_config'); ?>" id="component-form" method="post" name="adminForm" autocomplete="off">
+<form action="<?php echo JRoute::_('index.php?option=com_config'); ?>" id="component-form" method="post" class="form-validate" name="adminForm" autocomplete="off" data-cancel-task="config.cancel.component">
 	<div class="row">
 
 		<?php // Begin Sidebar ?>
@@ -55,6 +47,7 @@ JFactory::getDocument()->addScriptDeclaration(
 
 		<div class="col-md-10" id="config">
 
+			<?php if ($this->fieldsets): ?>
 			<ul class="nav nav-tabs" id="configTabs">
 				<?php foreach ($this->fieldsets as $name => $fieldSet) : ?>
 					<?php $dataShowOn = ''; ?>
@@ -73,7 +66,7 @@ JFactory::getDocument()->addScriptDeclaration(
 					<div class="tab-pane" id="<?php echo $name; ?>">
 						<?php if (isset($fieldSet->description) && !empty($fieldSet->description)) : ?>
 							<div class="tab-description alert alert-info">
-								<span class="icon-info"></span> <?php echo JText::_($fieldSet->description); ?>
+								<span class="icon-info" aria-hidden="true"></span> <?php echo JText::_($fieldSet->description); ?>
 							</div>
 						<?php endif; ?>
 						<?php foreach ($this->form->getFieldset($name) as $field) : ?>
@@ -101,13 +94,16 @@ JFactory::getDocument()->addScriptDeclaration(
 					</div>
 				<?php endforeach; ?>
 			</div>
+			<?php else: ?>
+				<div class="alert alert-info"><span class="icon-info" aria-hidden="true"></span> <?php echo JText::_('COM_CONFIG_COMPONENT_NO_CONFIG_FIELDS_MESSAGE'); ?></div>
+			<?php endif; ?>
 
 		</div>
 
-		<input type="hidden" name="id" value="<?php echo $this->component->id; ?>" />
-		<input type="hidden" name="component" value="<?php echo $this->component->option; ?>" />
-		<input type="hidden" name="return" value="<?php echo $this->return; ?>" />
-		<input type="hidden" name="task" value="" />
+		<input type="hidden" name="id" value="<?php echo $this->component->id; ?>">
+		<input type="hidden" name="component" value="<?php echo $this->component->option; ?>">
+		<input type="hidden" name="return" value="<?php echo $this->return; ?>">
+		<input type="hidden" name="task" value="">
 		<?php echo JHtml::_('form.token'); ?>
 	</div>
 </form>

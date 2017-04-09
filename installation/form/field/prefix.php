@@ -9,7 +9,7 @@
 defined('JPATH_BASE') or die;
 
 /**
- * Form Field class for the Joomla Framework.
+ * Database Prefix field.
  *
  * @since  1.6
  */
@@ -81,6 +81,6 @@ class InstallationFormFieldPrefix extends JFormField
 
 		return '<input type="text" name="' . $this->name . '" id="' . $this->id . '"' .
 				' value="' . htmlspecialchars($prefix, ENT_COMPAT, 'UTF-8') . '"' .
-				$class . $disabled . $readonly . $onchange . $maxLength . '/>';
+				$class . $disabled . $readonly . $onchange . $maxLength . '>';
 	}
 }

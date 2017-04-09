@@ -27,12 +27,12 @@ JHtml::_('bootstrap.tooltip');
 						<?php echo htmlspecialchars($item->title, ENT_QUOTES, 'UTF-8'); ?>
 					<?php endif; ?>
 				</strong>
-				<small class="hasTooltip" title="<?php echo JHtml::tooltipText('MOD_LATEST_CREATED_BY'); ?>">
+				<small class="hasTooltip" title="<?php echo JHtml::_('tooltipText', 'MOD_LATEST_CREATED_BY'); ?>">
 					<?php echo $item->author_name; ?>
 				</small>
 				<span class="badge badge-default badge-pill ml-auto">
 					<span class="small">
-						<span class="icon-calendar"></span>
+						<span class="icon-calendar" aria-hidden="true"></span>
 						<?php echo JHtml::_('date', $item->created, JText::_('DATE_FORMAT_LC5')); ?>
 					</span>
 				</span>

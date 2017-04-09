@@ -682,7 +682,7 @@ abstract class JHtmlSelect
 			$attribs = ArrayHelper::toString($attribs);
 		}
 
-		$id_text = $idtag ? $idtag : $name;
+		$id_text = $idtag ?: $name;
 
 		$html = '<div class="controls">';
 
@@ -715,7 +715,7 @@ abstract class JHtmlSelect
 
 			$html .= "\n\t" . '<label for="' . $id . '" id="' . $id . '-lbl" class="radio">';
 			$html .= "\n\t\n\t" . '<input type="radio" name="' . $name . '" id="' . $id . '" value="' . $k . '" ' . $extra
-				. $attribs . ' />' . $t;
+				. $attribs . '>' . $t;
 			$html .= "\n\t" . '</label>';
 		}
 

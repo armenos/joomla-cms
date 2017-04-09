@@ -478,24 +478,6 @@ abstract class JFactory
 	}
 
 	/**
-	 * Return a reference to the {@link JUri} object
-	 *
-	 * @param   string  $uri  Uri name.
-	 *
-	 * @return  JUri object
-	 *
-	 * @see     JUri
-	 * @since   11.1
-	 * @deprecated  13.3 (Platform) & 4.0 (CMS) - Use JUri directly.
-	 */
-	public static function getUri($uri = 'SERVER')
-	{
-		JLog::add(__METHOD__ . ' is deprecated. Use JUri directly.', JLog::WARNING, 'deprecated');
-
-		return JUri::getInstance($uri);
-	}
-
-	/**
 	 * Return the {@link JDate} object
 	 *
 	 * @param   mixed  $time      The initial time for the JDate object
@@ -609,10 +591,10 @@ abstract class JFactory
 	protected static function createContainer()
 	{
 		$container = (new Container)
-			->registerServiceProvider(new \Joomla\Cms\Service\Provider\Application)
-			->registerServiceProvider(new \Joomla\Cms\Service\Provider\Database)
-			->registerServiceProvider(new \Joomla\Cms\Service\Provider\Dispatcher)
-			->registerServiceProvider(new \Joomla\Cms\Service\Provider\Session);
+			->registerServiceProvider(new \Joomla\CMS\Service\Provider\Application)
+			->registerServiceProvider(new \Joomla\CMS\Service\Provider\Database)
+			->registerServiceProvider(new \Joomla\CMS\Service\Provider\Dispatcher)
+			->registerServiceProvider(new \Joomla\CMS\Service\Provider\Session);
 
 		return $container;
 	}

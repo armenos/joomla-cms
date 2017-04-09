@@ -16,14 +16,6 @@ JHtml::_('behavior.tabstate');
 
 JFactory::getDocument()->addScriptDeclaration(
 	'
-	Joomla.submitbutton = function(task)
-	{
-		if (task == "language.cancel" || document.formvalidator.isValid(document.getElementById("language-form")))
-		{
-			Joomla.submitform(task, document.getElementById("language-form"));
-		}
-	};
-
 	jQuery(document).ready(function() {
 		jQuery("#jform_image").on("change", function() {
 			var flag = this.value;
@@ -81,6 +73,6 @@ JFactory::getDocument()->addScriptDeclaration(
 
 	<?php echo JHtml::_('bootstrap.endTabSet'); ?>
 	</fieldset>
-	<input type="hidden" name="task" value="" />
+	<input type="hidden" name="task" value="">
 	<?php echo JHtml::_('form.token'); ?>
 </form>

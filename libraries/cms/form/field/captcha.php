@@ -9,12 +9,14 @@
 
 defined('JPATH_PLATFORM') or die;
 
+use Joomla\CMS\Captcha\Captcha;
+
 /**
- * Form Field class for the Joomla Framework.
+ * Captcha field.
  *
  * @since  2.5
  */
-class JFormFieldCaptcha extends JFormField implements JFormDomfieldinterface
+class JFormFieldCaptcha extends JFormField
 {
 	/**
 	 * The field type.
@@ -137,7 +139,7 @@ class JFormFieldCaptcha extends JFormField implements JFormDomfieldinterface
 		}
 		else
 		{
-			if (($captcha = JCaptcha::getInstance($this->plugin, array('namespace' => $this->namespace))) == null)
+			if (($captcha = Captcha::getInstance($this->plugin, array('namespace' => $this->namespace))) == null)
 			{
 				return '';
 			}

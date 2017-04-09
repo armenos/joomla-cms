@@ -21,7 +21,6 @@ $listDirn = $this->escape($this->state->get('list.direction'));
 <form action="<?php echo JRoute::_('index.php?option=com_search&view=searches'); ?>" method="post" name="adminForm" id="adminForm">
 	<div id="j-main-container" class="j-main-container">
 		<?php echo JLayoutHelper::render('joomla.searchtools.default', array('view' => $this, 'options' => array('filterButton' => false))); ?>
-		<div class="clearfix"> </div>
 		<?php if (empty($this->items)) : ?>
 		<div class="alert alert-warning alert-no-items">
 			<?php echo JText::_('JGLOBAL_NO_MATCHING_RESULTS'); ?>
@@ -33,10 +32,10 @@ $listDirn = $this->escape($this->state->get('list.direction'));
 					<th class="nowrap">
 						<?php echo JHtml::_('searchtools.sort', 'COM_SEARCH_HEADING_PHRASE', 'a.search_term', $listDirn, $listOrder); ?>
 					</th>
-					<th width="15%" class="nowrap">
+					<th style="width:15%" class="nowrap">
 						<?php echo JHtml::_('searchtools.sort', 'JGLOBAL_HITS', 'a.hits', $listDirn, $listOrder); ?>
 					</th>
-					<th width="1%" class="nowrap text-center">
+					<th style="width:1%" class="nowrap text-center">
 						<?php echo JText::_('COM_SEARCH_HEADING_RESULTS'); ?>
 					</th>
 				</tr>
@@ -72,8 +71,8 @@ $listDirn = $this->escape($this->state->get('list.direction'));
 			</tbody>
 		</table>
 		<?php endif; ?>
-		<input type="hidden" name="task" value="" />
-		<input type="hidden" name="boxchecked" value="0" />
+		<input type="hidden" name="task" value="">
+		<input type="hidden" name="boxchecked" value="0">
 		<?php echo JHtml::_('form.token'); ?>
 	</div>
 </form>

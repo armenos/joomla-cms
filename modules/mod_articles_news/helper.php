@@ -68,7 +68,7 @@ abstract class ModArticlesNewsHelper
 				$model->setState('filter.featured', 'show');
 				break;
 		}
-		
+
 		// Set ordering
 		$ordering = $params->get('ordering', 'a.publish_up');
 		$model->setState('list.ordering', $ordering);
@@ -95,9 +95,6 @@ abstract class ModArticlesNewsHelper
 			$item->readmore = strlen(trim($item->fulltext));
 			$item->slug     = $item->id . ':' . $item->alias;
 
-			/** @deprecated Catslug is deprecated, use catid instead. 4.0 **/
-			$item->catslug  = $item->catid . ':' . $item->category_alias;
-
 			if ($access || in_array($item->access, $authorised))
 			{
 				// We know that user has the privilege to view the article
@@ -120,6 +117,9 @@ abstract class ModArticlesNewsHelper
 
 			if ($triggerEvents)
 			{
+				$item->text = '';
+				$app->triggerEvent('onContentPrepare', array ('com_content.article', &$item, &$params, 1));
+
 				$results                 = $app->triggerEvent('onContentAfterTitle', array('com_content.article', &$item, &$params, 1));
 				$item->afterDisplayTitle = trim(implode("\n", $results));
 

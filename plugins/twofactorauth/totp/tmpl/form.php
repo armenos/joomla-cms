@@ -9,7 +9,7 @@
 
 defined('_JEXEC') or die;
 ?>
-<input type="hidden" name="jform[twofactor][totp][key]" value="<?php echo $secret ?>" />
+<input type="hidden" name="jform[twofactor][totp][key]" value="<?php echo $secret ?>">
 
 <div class="well">
 	<?php echo JText::_('PLG_TWOFACTORAUTH_TOTP_INTRO') ?>
@@ -24,12 +24,12 @@ defined('_JEXEC') or die;
 	</p>
 	<ul>
 		<li>
-			<a href="<?php echo JText::_('PLG_TWOFACTORAUTH_TOTP_STEP1_ITEM1_LINK') ?>" target="_blank">
+			<a href="<?php echo JText::_('PLG_TWOFACTORAUTH_TOTP_STEP1_ITEM1_LINK') ?>" target="_blank" rel="noopener noreferrer">
 				<?php echo JText::_('PLG_TWOFACTORAUTH_TOTP_STEP1_ITEM1') ?>
 			</a>
 		</li>
 		<li>
-			<a href="<?php echo JText::_('PLG_TWOFACTORAUTH_TOTP_STEP1_ITEM2_LINK') ?>" target="_blank">
+			<a href="<?php echo JText::_('PLG_TWOFACTORAUTH_TOTP_STEP1_ITEM2_LINK') ?>" target="_blank" rel="noopener noreferrer">
 				<?php echo JText::_('PLG_TWOFACTORAUTH_TOTP_STEP1_ITEM2') ?>
 			</a>
 		</li>
@@ -71,8 +71,8 @@ defined('_JEXEC') or die;
 	<div class="span6">
 		<p>
 			<?php echo JText::_('PLG_TWOFACTORAUTH_TOTP_STEP2_ALTTEXT') ?>
-			<br />
-			<img src="<?php echo $url ?>" style="float: none;" />
+			<br>
+			<img src="<?php echo $url ?>" style="float: none;">
 		</p>
 	</div>
 

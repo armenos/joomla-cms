@@ -35,7 +35,6 @@ JFactory::getDocument()->addStyleDeclaration(
 <form action="<?php echo JRoute::_('index.php?option=com_messages&view=messages'); ?>" method="post" name="adminForm" id="adminForm">
 	<div id="j-main-container" class="j-main-container">
 		<?php echo JLayoutHelper::render('joomla.searchtools.default', array('view' => $this)); ?>
-		<div class="clearfix"></div>
 		<?php if (empty($this->items)) : ?>
 			<div class="alert alert-warning alert-no-items">
 				<?php echo JText::_('JGLOBAL_NO_MATCHING_RESULTS'); ?>
@@ -44,19 +43,19 @@ JFactory::getDocument()->addStyleDeclaration(
 			<table class="table table-striped">
 				<thead>
 					<tr>
-						<th width="1%" class="nowrap text-center">
+						<th style="width:1%" class="nowrap text-center">
 							<?php echo JHtml::_('grid.checkall'); ?>
 						</th>
 						<th class="title nowrap">
 							<?php echo JHtml::_('searchtools.sort', 'COM_MESSAGES_HEADING_SUBJECT', 'a.subject', $listDirn, $listOrder); ?>
 						</th>
-						<th width="1%" class="nowrap text-center">
+						<th style="width:1%" class="nowrap text-center">
 							<?php echo JHtml::_('searchtools.sort', 'COM_MESSAGES_HEADING_READ', 'a.state', $listDirn, $listOrder); ?>
 						</th>
-						<th width="15%" class="nowrap">
+						<th style="width:15%" class="nowrap">
 							<?php echo JHtml::_('searchtools.sort', 'COM_MESSAGES_HEADING_FROM', 'a.user_id_from', $listDirn, $listOrder); ?>
 						</th>
-						<th width="20%" class="nowrap hidden-sm-down">
+						<th style="width:20%" class="nowrap hidden-sm-down">
 							<?php echo JHtml::_('searchtools.sort', 'JDATE', 'a.date_time', $listDirn, $listOrder); ?>
 						</th>
 					</tr>
@@ -95,8 +94,8 @@ JFactory::getDocument()->addStyleDeclaration(
 			</table>
 		<?php endif; ?>
 		<div>
-			<input type="hidden" name="task" value="" />
-			<input type="hidden" name="boxchecked" value="0" />
+			<input type="hidden" name="task" value="">
+			<input type="hidden" name="boxchecked" value="0">
 			<?php echo JHtml::_('form.token'); ?>
 		</div>
 	</div>

@@ -72,12 +72,12 @@ class JFormFieldList extends JFormField
 
 				foreach ($this->value as $value)
 				{
-					$html[] = '<input type="hidden" name="' . $this->name . '" value="' . htmlspecialchars($value, ENT_COMPAT, 'UTF-8') . '"/>';
+					$html[] = '<input type="hidden" name="' . $this->name . '" value="' . htmlspecialchars($value, ENT_COMPAT, 'UTF-8') . '">';
 				}
 			}
 			else
 			{
-				$html[] = '<input type="hidden" name="' . $this->name . '" value="' . htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8') . '"/>';
+				$html[] = '<input type="hidden" name="' . $this->name . '" value="' . htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8') . '">';
 			}
 		}
 		else
@@ -225,13 +225,32 @@ class JFormFieldList extends JFormField
 		if ($text && $this->element instanceof SimpleXMLElement)
 		{
 			$child = $this->element->addChild('option', $text);
-	
+
 			foreach ($attributes as $name => $value)
 			{
 				$child->addAttribute($name, $value);
 			}
 		}
-	
+
 		return $this;
+	}
+
+	/**
+	 * Method to get certain otherwise inaccessible properties from the form field object.
+	 *
+	 * @param   string  $name  The property name for which to the the value.
+	 *
+	 * @return  mixed  The property value or null.
+	 *
+	 * @since   3.7.0
+	 */
+	public function __get($name)
+	{
+		if ($name == 'options')
+		{
+			return $this->getOptions();
+		}
+
+		return parent::__get($name);
 	}
 }

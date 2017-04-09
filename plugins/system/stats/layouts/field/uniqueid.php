@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     Joomla.Plugin
- * @subpackage  System.Stats
+ * @subpackage  System.stats
  *
  * @copyright   Copyright (C) 2005 - 2017 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
@@ -40,7 +40,7 @@ extract($displayData);
  * @var   array    $options         Options available for this field.
  */
 ?>
-<input type="hidden" name="<?php echo $name; ?>" id="<?php echo $id; ?>" value="<?php echo htmlspecialchars($value, ENT_COMPAT, 'UTF-8'); ?>" />
+<input type="hidden" name="<?php echo $name; ?>" id="<?php echo $id; ?>" value="<?php echo htmlspecialchars($value, ENT_COMPAT, 'UTF-8'); ?>">
 <a class="btn" onclick="document.getElementById('<?php echo $id; ?>').value='';Joomla.submitbutton('plugin.apply');">
 	<span class="icon-refresh"></span> <?php echo JText::_('PLG_SYSTEM_STATS_RESET_UNIQUE_ID'); ?>
 </a>

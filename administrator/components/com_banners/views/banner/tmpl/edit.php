@@ -16,13 +16,6 @@ JHtml::_('behavior.formvalidator');
 JHtml::_('formbehavior.chosen', '#jform_catid', null, array('disable_search_threshold' => 0 ));
 
 JFactory::getDocument()->addScriptDeclaration('
-	Joomla.submitbutton = function(task)
-	{
-		if (task == "banner.cancel" || document.formvalidator.isValid(document.getElementById("banner-form")))
-		{
-			Joomla.submitform(task, document.getElementById("banner-form"));
-		}
-	};
 	jQuery(document).ready(function ($){
 		$("#jform_type").on("change", function (a, params) {
 
@@ -96,6 +89,6 @@ JFactory::getDocument()->addScriptDeclaration('
 		<?php echo JHtml::_('bootstrap.endTabSet'); ?>
 	</div>
 
-	<input type="hidden" name="task" value="" />
+	<input type="hidden" name="task" value="">
 	<?php echo JHtml::_('form.token'); ?>
 </form>

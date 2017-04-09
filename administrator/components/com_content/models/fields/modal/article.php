@@ -120,7 +120,7 @@ class JFormFieldModal_Article extends JFormField
 			$html .= '<span class="input-group">';
 		}
 
-		$html .= '<input class="form-control" id="' . $this->id . '_name" type="text" value="' . $title . '" disabled="disabled" size="35" />';
+		$html .= '<input class="form-control" id="' . $this->id . '_name" type="text" value="' . $title . '" disabled="disabled" size="35">';
 
 		if ($allowSelect || $allowNew || $allowEdit || $allowClear)
 		{
@@ -137,7 +137,7 @@ class JFormFieldModal_Article extends JFormField
 				. ' role="button"'
 				. ' href="#ModalSelect' . $modalId . '"'
 				. ' title="' . JHtml::tooltipText('COM_CONTENT_CHANGE_ARTICLE') . '">'
-				. '<span class="icon-file"></span> ' . JText::_('JSELECT')
+				. '<span class="icon-file" aria-hidden="true"></span> ' . JText::_('JSELECT')
 				. '</a>';
 		}
 
@@ -151,7 +151,7 @@ class JFormFieldModal_Article extends JFormField
 				. ' role="button"'
 				. ' href="#ModalNew' . $modalId . '"'
 				. ' title="' . JHtml::tooltipText('COM_CONTENT_NEW_ARTICLE') . '">'
-				. '<span class="icon-new"></span> ' . JText::_('JACTION_CREATE')
+				. '<span class="icon-new" aria-hidden="true"></span> ' . JText::_('JACTION_CREATE')
 				. '</a>';
 		}
 
@@ -165,7 +165,7 @@ class JFormFieldModal_Article extends JFormField
 				. ' role="button"'
 				. ' href="#ModalEdit' . $modalId . '"'
 				. ' title="' . JHtml::tooltipText('COM_CONTENT_EDIT_ARTICLE') . '">'
-				. '<span class="icon-edit"></span> ' . JText::_('JACTION_EDIT')
+				. '<span class="icon-edit" aria-hidden="true"></span> ' . JText::_('JACTION_EDIT')
 				. '</a>';
 		}
 
@@ -177,7 +177,7 @@ class JFormFieldModal_Article extends JFormField
 				. ' id="' . $this->id . '_clear"'
 				. ' href="#"'
 				. ' onclick="window.processModalParent(\'' . $this->id . '\'); return false;">'
-				. '<span class="icon-remove"></span>' . JText::_('JCLEAR')
+				. '<span class="icon-remove" aria-hidden="true"></span>' . JText::_('JCLEAR')
 				. '</a>';
 		}
 
@@ -267,7 +267,7 @@ class JFormFieldModal_Article extends JFormField
 		$class = $this->required ? ' class="required modal-value"' : '';
 
 		$html .= '<input type="hidden" id="' . $this->id . '_id" ' . $class . ' data-required="' . (int) $this->required . '" name="' . $this->name
-			. '" data-text="' . htmlspecialchars(JText::_('COM_CONTENT_SELECT_AN_ARTICLE', true), ENT_COMPAT, 'UTF-8') . '" value="' . $value . '" />';
+			. '" data-text="' . htmlspecialchars(JText::_('COM_CONTENT_SELECT_AN_ARTICLE', true), ENT_COMPAT, 'UTF-8') . '" value="' . $value . '">';
 
 		return $html;
 	}

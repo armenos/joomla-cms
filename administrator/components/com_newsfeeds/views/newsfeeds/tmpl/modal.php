@@ -40,19 +40,19 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 			<table class="table table-striped table-sm">
 				<thead>
 					<tr>
-						<th width="1%" class="nowrap text-center">
+						<th style="width:1%" class="nowrap text-center">
 							<?php echo JHtml::_('searchtools.sort', 'JSTATUS', 'a.published', $listDirn, $listOrder); ?>
 						</th>
 						<th class="nowrap title">
 							<?php echo JHtml::_('searchtools.sort', 'JGLOBAL_TITLE', 'a.name', $listDirn, $listOrder); ?>
 						</th>
-						<th width="15%" class="nowrap hidden-sm-down">
+						<th style="width:15%" class="nowrap hidden-sm-down">
 							<?php echo JHtml::_('searchtools.sort', 'JGRID_HEADING_ACCESS', 'access_level', $listDirn, $listOrder); ?>
 						</th>
-						<th width="15%" class="nowrap hidden-sm-down">
+						<th style="width:15%" class="nowrap hidden-sm-down">
 							<?php echo JHtml::_('searchtools.sort', 'JGRID_HEADING_LANGUAGE', 'language_title', $listDirn, $listOrder); ?>
 						</th>
-						<th width="1%" class="nowrap hidden-sm-down">
+						<th style="width:1%" class="nowrap hidden-sm-down">
 							<?php echo JHtml::_('searchtools.sort', 'JGRID_HEADING_ID', 'a.id', $listDirn, $listOrder); ?>
 						</th>
 					</tr>
@@ -120,9 +120,9 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 			</table>
 		<?php endif; ?>
 
-		<input type="hidden" name="task" value="" />
-		<input type="hidden" name="boxchecked" value="0" />
-		<input type="hidden" name="forcedLanguage" value="<?php echo $app->input->get('forcedLanguage', '', 'CMD'); ?>" />
+		<input type="hidden" name="task" value="">
+		<input type="hidden" name="boxchecked" value="0">
+		<input type="hidden" name="forcedLanguage" value="<?php echo $app->input->get('forcedLanguage', '', 'CMD'); ?>">
 		<?php echo JHtml::_('form.token'); ?>
 
 	</form>

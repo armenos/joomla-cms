@@ -40,8 +40,6 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 
 		<?php echo JLayoutHelper::render('joomla.searchtools.default', array('view' => $this)); ?>
 
-		<div class="clearfix"></div>
-
 		<?php if (empty($this->items)) : ?>
 			<div class="alert alert-warning alert-no-items">
 				<?php echo JText::_('JGLOBAL_NO_MATCHING_RESULTS'); ?>
@@ -50,19 +48,19 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 			<table class="table table-striped" id="categoryList">
 				<thead>
 					<tr>
-						<th width="1%" class="nowrap text-center">
+						<th style="width:1%" class="nowrap text-center">
 							<?php echo JHtml::_('searchtools.sort', 'JSTATUS', 'a.published', $listDirn, $listOrder); ?>
 						</th>
 						<th class="nowrap">
 							<?php echo JHtml::_('searchtools.sort', 'JGLOBAL_TITLE', 'a.title', $listDirn, $listOrder); ?>
 						</th>
-						<th width="10%" class="nowrap hidden-sm-down">
+						<th style="width:10%" class="nowrap hidden-sm-down">
 							<?php echo JHtml::_('searchtools.sort', 'JGRID_HEADING_ACCESS', 'access_level', $listDirn, $listOrder); ?>
 						</th>
-						<th width="15%" class="nowrap hidden-sm-down">
+						<th style="width:15%" class="nowrap hidden-sm-down">
 							<?php echo JHtml::_('searchtools.sort', 'JGRID_HEADING_LANGUAGE', 'language_title', $listDirn, $listOrder); ?>
 						</th>
-						<th width="1%" class="nowrap hidden-sm-down">
+						<th style="width:1%" class="nowrap hidden-sm-down">
 							<?php echo JHtml::_('searchtools.sort', 'JGRID_HEADING_ID', 'a.id', $listDirn, $listOrder); ?>
 						</th>
 					</tr>
@@ -130,10 +128,10 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 			</table>
 		<?php endif; ?>
 
-		<input type="hidden" name="extension" value="<?php echo $extension; ?>" />
-		<input type="hidden" name="task" value="" />
-		<input type="hidden" name="boxchecked" value="0" />
-		<input type="hidden" name="forcedLanguage" value="<?php echo $app->input->get('forcedLanguage', '', 'CMD'); ?>" />
+		<input type="hidden" name="extension" value="<?php echo $extension; ?>">
+		<input type="hidden" name="task" value="">
+		<input type="hidden" name="boxchecked" value="0">
+		<input type="hidden" name="forcedLanguage" value="<?php echo $app->input->get('forcedLanguage', '', 'CMD'); ?>">
 		<?php echo JHtml::_('form.token'); ?>
 
 	</form>

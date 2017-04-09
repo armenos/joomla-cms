@@ -17,6 +17,9 @@
 // Alert
 @import "../../../../media/system/scss/jalert";
 
+// Switcher
+@import "../../../../media/system/scss/switcher";
+
 // Blocks
 @import "blocks/global"; // Leave this first
 @import "blocks/alerts";
@@ -31,13 +34,13 @@
 @import "blocks/sidebar";
 @import "blocks/sidebar-nav";
 @import "blocks/status";
-@import "blocks/switcher";
 @import "blocks/toolbar";
 @import "blocks/treeselect";
 @import "blocks/utilities";
 
 // Vendor overrides
 @import "vendor/awesomplete";
+@import "vendor/bootstrap/alert";
 @import "vendor/bootstrap/buttons";
 @import "vendor/bootstrap/card";
 @import "vendor/bootstrap/custom-forms";
@@ -57,8 +60,10 @@
 @import "pages/com_config";
 @import "pages/com_cpanel";
 @import "pages/com_modules";
+@import "pages/com_users";
 
-.container-main, .system-debug {
+.container-main,
+.system-debug {
   padding-bottom: 50px;
 }
 
@@ -68,23 +73,36 @@
   padding-top: 15px;
   background-color: $atum-container-main-bg;
 }
+
 .list-view-main {
+
   .container-main {
     background-color: $atum-container-main-bg;
   }
+
 }
 
 .content {
   margin-top: 42px;
   border-radius: $border-radius;
-}
-.j-main-container {
-  background-color: $white-offset;
-  border: 1px solid rgba(0, 0, 0, .17);
-  border-radius: $border-radius;
-  box-shadow: 0 0 3px rgba(0, 0, 0, .075);
+
+  > .row {
+    margin-right: 0;
+    margin-left: 0;
+  }
+
 }
 
+.j-main-container {
+  background-color: $white-offset;
+  border: 1px solid rgba(0,0,0,.17);
+  border-radius: $border-radius;
+  box-shadow: 0 0 3px rgba(0,0,0,.075);
+}
+
+.row-selected {
+  background-color: $table-row-selected;
+}
 
 // Chosen (TEMPORARY)
 .chzn-container-single {

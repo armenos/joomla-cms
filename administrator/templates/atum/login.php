@@ -45,12 +45,15 @@ $task     = $app->input->getCmd('task', '');
 $itemid   = $app->input->getCmd('Itemid', '');
 $sitename = $app->get('sitename');
 
+// Set some meta data
+$doc->setMetaData('viewport', 'width=device-width, initial-scale=1');
+// @TODO sync with _variables.scss
+$doc->setMetaData('theme-color', '#1c3d5c');
+
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>">
 <head>
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 	<jdoc:include type="head" />
 	<style>
 		.login-initial {
@@ -75,7 +78,7 @@ $sitename = $app->get('sitename');
 	<?php // Container ?>
 	<div class="container">
 		<div class="login-logo">
-			<img class="card-img-top" src="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/images/logo.svg" alt="<?php echo $sitename; ?>" />
+			<img class="card-img-top" src="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/images/logo.svg" alt="<?php echo $sitename; ?>">
 		</div>
 		<div id="content">
 			<noscript>
@@ -85,31 +88,40 @@ $sitename = $app->get('sitename');
 			</noscript>
 			<?php // Begin Content ?>
 			<div id="element-box" class="login card card-block">
-				<h2 class="text-center m-t-1 m-b-2"><?php echo JText::_('MOD_LOGIN_LOGIN'); ?></h2>
+				<h2 class="text-center mt-1 mb-2"><?php echo JText::_('MOD_LOGIN_LOGIN'); ?></h2>
 				<jdoc:include type="message" />
 				<jdoc:include type="component" />
 			</div>
 			<?php // End Content ?>
 		</div>
 	</div>
+
 	<nav class="navbar fixed-bottom hidden-xs-down">
 		<ul class="nav nav-fill">
 			<li class="nav-item">
 				<a href="<?php echo JUri::root(); ?>" target="_blank" class="float-left"><span class="fa fa-external-link"></span> <?php echo JText::_('COM_LOGIN_RETURN_TO_SITE_HOME_PAGE'); ?></a>
 			</li>
 			<li class="nav-item">
-				<a class="login-joomla hasTooltip" href="https://www.joomla.org" target="_blank" title="<?php echo JHtml::tooltipText('TPL_ATUM_ISFREESOFTWARE'); ?>"><span class="fa fa-joomla"></span></a>
+				<a class="login-joomla hasTooltip" href="https://www.joomla.org" target="_blank" title="<?php echo JHtml::tooltipText('TPL_ATUM_ISFREESOFTWARE'); ?>">
+					<span class="fa fa-joomla"></span>
+					<span class="sr-only"><?php echo JText::_('TPL_ATUM_GOTO_JOOMLA_HOME_PAGE'); ?></span>
+				</a>
 			</li>
-			<li class="nav-item">	
+			<li class="nav-item">
 				<span class="text-white float-right">&copy; <?php echo date('Y'); ?> <?php echo $sitename; ?></span>
 			</li>
 		</ul>
 	</nav>
+
 	<jdoc:include type="modules" name="debug" style="none" />
+
 	<script>
 		document.addEventListener('DOMContentLoaded', function() {
 			var formTmp = document.querySelector('.login-initial');
-			if (formTmp) formTmp.style.display = 'block';
+			if (formTmp) {
+				formTmp.style.display = 'block';
+				document.getElementById('mod-login-username').focus();
+			}
 		});
 	</script>
 </body>

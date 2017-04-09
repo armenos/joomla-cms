@@ -245,7 +245,7 @@ abstract class JError
 			// This is required to prevent a very unhelpful white-screen-of-death
 			jexit(
 				'JError::raise -> Static method JError::' . $function . ' does not exist. Contact a developer to debug' .
-				'<br /><strong>Error was</strong> <br />' . $exception->getMessage()
+				'<br><strong>Error was</strong> <br>' . $exception->getMessage()
 			);
 		}
 		// We don't need to store the error, since JException already does that for us!
@@ -582,8 +582,8 @@ abstract class JError
 		if (isset($_SERVER['HTTP_HOST']))
 		{
 			// Output as html
-			echo "<br /><b>jos-$level_human</b>: "
-				. $error->get('message') . "<br />\n"
+			echo "<br><b>jos-$level_human</b>: "
+				. $error->get('message') . "<br>\n"
 				. (JDEBUG ? nl2br($trace) : '');
 		}
 		else
@@ -635,11 +635,11 @@ abstract class JError
 		if (isset($_SERVER['HTTP_HOST']))
 		{
 			// Output as html
-			echo "<br /><b>J$level_human</b>: " . $error->get('message') . "<br />\n";
+			echo "<br><b>J$level_human</b>: " . $error->get('message') . "<br>\n";
 
 			if ($info != null)
 			{
-				echo '&#160;&#160;&#160;' . $info . "<br />\n";
+				echo '&#160;&#160;&#160;' . $info . "<br>\n";
 			}
 
 			echo $error->getBacktrace(true);
@@ -680,7 +680,7 @@ abstract class JError
 		if (isset($_SERVER['HTTP_HOST']))
 		{
 			// Output as html
-			jexit("<br /><b>J$level_human</b>: " . $error->get('message') . "<br />\n");
+			jexit("<br><b>J$level_human</b>: " . $error->get('message') . "<br>\n");
 		}
 		else
 		{
@@ -831,55 +831,6 @@ abstract class JError
 	{
 		JLog::add('JError::renderBacktrace() is deprecated.', JLog::WARNING, 'deprecated');
 
-		$contents = null;
-		$backtrace = $error->getTrace();
-
-		if (is_array($backtrace))
-		{
-			ob_start();
-			$j = 1;
-			echo '<table cellpadding="0" cellspacing="0" class="Table">';
-			echo '		<tr>';
-			echo '				<td colspan="3" class="TD"><strong>Call stack</strong></td>';
-			echo '		</tr>';
-			echo '		<tr>';
-			echo '				<td class="TD"><strong>#</strong></td>';
-			echo '				<td class="TD"><strong>Function</strong></td>';
-			echo '				<td class="TD"><strong>Location</strong></td>';
-			echo '		</tr>';
-
-			for ($i = count($backtrace) - 1; $i >= 0; $i--)
-			{
-				echo '		<tr>';
-				echo '				<td class="TD">' . $j . '</td>';
-
-				if (isset($backtrace[$i]['class']))
-				{
-					echo '		<td class="TD">' . $backtrace[$i]['class'] . $backtrace[$i]['type'] . $backtrace[$i]['function'] . '()</td>';
-				}
-				else
-				{
-					echo '		<td class="TD">' . $backtrace[$i]['function'] . '()</td>';
-				}
-
-				if (isset($backtrace[$i]['file']))
-				{
-					echo '				<td class="TD">' . $backtrace[$i]['file'] . ':' . $backtrace[$i]['line'] . '</td>';
-				}
-				else
-				{
-					echo '				<td class="TD">&#160;</td>';
-				}
-
-				echo '		</tr>';
-				$j++;
-			}
-
-			echo '</table>';
-			$contents = ob_get_contents();
-			ob_end_clean();
-		}
-
-		return $contents;
+		return JLayoutHelper::render('joomla.error.backtrace', array('backtrace' => $error->getTrace()));
 	}
 }

@@ -16,15 +16,6 @@ JHtml::_('behavior.keepalive');
 JHtml::_('behavior.tabstate');
 
 $user = JFactory::getUser();
-
-JFactory::getDocument()->addScriptDeclaration("
-	Joomla.submitbutton = function(task)
-	{
-		if (task == 'style.cancel' || document.formvalidator.isValid(document.getElementById('style-form'))) {
-			Joomla.submitform(task, document.getElementById('style-form'));
-		}
-	};
-");
 ?>
 
 <form action="<?php echo JRoute::_('index.php?option=com_templates&layout=edit&id=' . (int) $this->item->id); ?>" method="post" name="adminForm" id="style-form" class="form-validate">
@@ -42,7 +33,7 @@ JFactory::getDocument()->addScriptDeclaration("
 					<?php echo JText::_($this->item->template); ?>
 				</h3>
 				<div class="info-labels">
-					<span class="badge badge-default hasTooltip" title="<?php echo JHtml::tooltipText('COM_TEMPLATES_FIELD_CLIENT_LABEL'); ?>">
+					<span class="badge badge-default hasTooltip" title="<?php echo JHtml::_('tooltipText', 'COM_TEMPLATES_FIELD_CLIENT_LABEL'); ?>">
 						<?php echo $this->item->client_id == 0 ? JText::_('JSITE') : JText::_('JADMINISTRATOR'); ?>
 					</span>
 				</div>
@@ -102,7 +93,7 @@ JFactory::getDocument()->addScriptDeclaration("
 
 		<?php echo JHtml::_('bootstrap.endTabSet'); ?>
 
-		<input type="hidden" name="task" value="" />
+		<input type="hidden" name="task" value="">
 		<?php echo JHtml::_('form.token'); ?>
 	</div>
 </form>

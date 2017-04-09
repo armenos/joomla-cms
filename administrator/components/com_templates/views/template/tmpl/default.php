@@ -74,6 +74,38 @@ jQuery(document).ready(function($){
 		$('#folderModal input.address').val($(this).attr('data-id'));
 		$(this).addClass('selected');
 	});
+
+	var containerDiv = document.querySelector('.span3.tree-holder'),
+		treeContainer = containerDiv.querySelector('.nav.nav-list'),
+		liEls = treeContainer.querySelectorAll('.folder.show'),
+		filePathEl = document.querySelector('p.lead.hidden.path');
+
+	if(filePathEl)
+		var filePathTmp = document.querySelector('p.lead.hidden.path').innerText;
+
+	 if(filePathTmp && filePathTmp.charAt( 0 ) === '/' ) {
+			filePathTmp = filePathTmp.slice( 1 );
+			filePathTmp = filePathTmp.split('/');
+			filePathTmp = filePathTmp[filePathTmp.length - 1];
+			var re = new RegExp( filePathTmp );
+
+		for (var i = 0, l = liEls.length; i < l; i++) {
+			liEls[i].querySelector('a').classList.add('active');
+			if (i === liEls.length - 1) {
+				var parentUl = liEls[i].querySelector('ul'),
+					allLi = parentUl.querySelectorAll('li'); 
+	
+				for (var i = 0, l = allLi.length; i < l; i++) {
+					aEl = allLi[i].querySelector('a'),
+					spanEl = aEl.querySelector('span');
+	
+					if (spanEl && re.test(spanEl.innerText)) {
+						aEl.classList.add('active');
+					}
+				}
+			}
+		}
+	}
 });");
 
 if ($this->type == 'image')
@@ -171,12 +203,15 @@ if ($this->type == 'font')
 	<div class="col-md-12">
 		<?php if($this->type == 'file') : ?>
 			<p class="lead"><?php echo JText::sprintf('COM_TEMPLATES_TEMPLATE_FILENAME', $this->source->filename, $this->template->element); ?></p>
+			<p class="lead path hidden"><?php echo $this->source->filename; ?></p>
 		<?php endif; ?>
 		<?php if($this->type == 'image') : ?>
 			<p class="lead"><?php echo JText::sprintf('COM_TEMPLATES_TEMPLATE_FILENAME', $this->image['path'], $this->template->element); ?></p>
+			<p class="lead path hidden"><?php echo $this->image['path']; ?></p>
 		<?php endif; ?>
 		<?php if($this->type == 'font') : ?>
 			<p class="lead"><?php echo JText::sprintf('COM_TEMPLATES_TEMPLATE_FILENAME', $this->font['rel_path'], $this->template->element); ?></p>
+			<p class="lead path hidden"><?php echo $this->font['rel_path']; ?></p>
 		<?php endif; ?>
 	</div>
 </div>
@@ -187,7 +222,7 @@ if ($this->type == 'font')
 	<div class="col-md-9">
 		<?php if ($this->type == 'home') : ?>
 			<form action="<?php echo JRoute::_('index.php?option=com_templates&view=template&id=' . $input->getInt('id') . '&file=' . $this->file); ?>" method="post" name="adminForm" id="adminForm">
-				<input type="hidden" name="task" value="" />
+				<input type="hidden" name="task" value="">
 				<?php echo JHtml::_('form.token'); ?>
 				<h2><?php echo JText::_('COM_TEMPLATES_HOME_HEADING'); ?></h2>
 				<p><?php echo JText::_('COM_TEMPLATES_HOME_TEXT'); ?></p>
@@ -216,27 +251,27 @@ if ($this->type == 'font')
 					<?php foreach ($this->archive as $file) : ?>
 						<li>
 							<?php if (substr($file, -1) === DIRECTORY_SEPARATOR) : ?>
-								<i class="fa-fw fa fa-folder"></i>&nbsp;<?php echo $file; ?>
+								<i class="fa-fw fa fa-folder" aria-hidden="true"></i>&nbsp;<?php echo $file; ?>
 							<?php endif; ?>
 							<?php if (substr($file, -1) != DIRECTORY_SEPARATOR) : ?>
-								<i class="fa-fw fa fa-file-o"></i>&nbsp;<?php echo $file; ?>
+								<i class="fa-fw fa fa-file-o" aria-hidden="true"></i>&nbsp;<?php echo $file; ?>
 							<?php endif; ?>
 						</li>
 					<?php endforeach; ?>
 				</ul>
-				<input type="hidden" name="task" value="" />
+				<input type="hidden" name="task" value="">
 				<?php echo JHtml::_('form.token'); ?>
 			</form>
 		<?php endif; ?>
 		<?php if ($this->type == 'image') : ?>
-			<img id="image-crop" src="<?php echo $this->image['address'] . '?' . time(); ?>" />
+			<img id="image-crop" src="<?php echo $this->image['address'] . '?' . time(); ?>">
 			<form action="<?php echo JRoute::_('index.php?option=com_templates&view=template&id=' . $input->getInt('id') . '&file=' . $this->file); ?>" method="post" name="adminForm" id="adminForm">
 				<fieldset class="adminform">
-					<input type ="hidden" id="x" name="x" />
-					<input type ="hidden" id="y" name="y" />
-					<input type ="hidden" id="h" name="h" />
-					<input type ="hidden" id="w" name="w" />
-					<input type="hidden" name="task" value="" />
+					<input type ="hidden" id="x" name="x">
+					<input type ="hidden" id="y" name="y">
+					<input type ="hidden" id="h" name="h">
+					<input type ="hidden" id="w" name="w">
+					<input type="hidden" name="task" value="">
 					<?php echo JHtml::_('form.token'); ?>
 				</fieldset>
 			</form>
@@ -257,11 +292,11 @@ if ($this->type == 'font')
 						<ul>
 							<li>Item</li>
 							<li>Item</li>
-							<li>Item<br />
+							<li>Item<br>
 								<ul>
 									<li>Item</li>
 									<li>Item</li>
-									<li>Item<br />
+									<li>Item<br>
 										<ul>
 											<li>Item</li>
 											<li>Item</li>
@@ -275,11 +310,11 @@ if ($this->type == 'font')
 						<ol>
 							<li>Item</li>
 							<li>Item</li>
-							<li>Item<br />
+							<li>Item<br>
 								<ul>
 									<li>Item</li>
 									<li>Item</li>
-									<li>Item<br />
+									<li>Item<br>
 										<ul>
 											<li>Item</li>
 											<li>Item</li>
@@ -289,7 +324,7 @@ if ($this->type == 'font')
 								</ul>
 							</li>
 						</ol>
-						<input type="hidden" name="task" value="" />
+						<input type="hidden" name="task" value="">
 						<?php echo JHtml::_('form.token'); ?>
 					</fieldset>
 				</form>
