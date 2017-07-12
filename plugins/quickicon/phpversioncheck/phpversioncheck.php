@@ -61,7 +61,7 @@ class PlgQuickiconPhpVersionCheck extends JPlugin
 	 *
 	 * @param   string  $context  The calling context
 	 *
-	 * @return  void
+	 * @return  array
 	 *
 	 * @since   3.7.0
 	 */
@@ -69,7 +69,7 @@ class PlgQuickiconPhpVersionCheck extends JPlugin
 	{
 		if (!$this->shouldDisplayMessage())
 		{
-			return;
+			return [];
 		}
 
 		$supportStatus = $this->getPhpSupport();
@@ -85,11 +85,13 @@ class PlgQuickiconPhpVersionCheck extends JPlugin
 					break;
 
 				case self::PHP_UNSUPPORTED:
-					$this->app->enqueueMessage($supportStatus['message'], 'error');
+					$this->app->enqueueMessage($supportStatus['message'], 'danger');
 
 					break;
 			}
 		}
+
+		return [];
 	}
 
 	/**
@@ -99,20 +101,12 @@ class PlgQuickiconPhpVersionCheck extends JPlugin
 	 *
 	 * @since   3.7.0
 	 * @note    The dates used in this method should correspond to the dates given on PHP.net
-	 * @see     https://secure.php.net/supported-versions.php
-	 * @see     https://secure.php.net/eol.php
+	 * @link    https://secure.php.net/supported-versions.php
+	 * @link    https://secure.php.net/eol.php
 	 */
 	private function getPhpSupport()
 	{
 		$phpSupportData = array(
-			'5.3' => array(
-				'security' => '2013-07-11',
-				'eos'      => '2014-08-14',
-			),
-			'5.4' => array(
-				'security' => '2014-09-14',
-				'eos'      => '2015-09-14',
-			),
 			'5.5' => array(
 				'security' => '2015-07-10',
 				'eos'      => '2016-07-21'
@@ -175,10 +169,11 @@ class PlgQuickiconPhpVersionCheck extends JPlugin
 				);
 			}
 
-			// If the version is still supported, check if it has reached security support only
-			$phpSecurityOnlyDate = new JDate($phpSupportData[$activePhpVersion]['security']);
+			// If the version is still supported, check if it has reached eol minus 3 month
+			$interval = new DateInterval('P3M');
+			$phpEndOfSupport->sub($interval);
 
-			if (!$phpNotSupported && $today > $phpSecurityOnlyDate)
+			if (!$phpNotSupported && $today > $phpEndOfSupport)
 			{
 				$supportStatus['status']  = self::PHP_SECURITY_ONLY;
 				$supportStatus['message'] = JText::sprintf(

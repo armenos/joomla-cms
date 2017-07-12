@@ -4,7 +4,7 @@
  * @subpackage  Application
  *
  * @copyright   Copyright (C) 2005 - 2017 Open Source Matters, Inc. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
 use Joomla\Registry\Registry;
@@ -104,7 +104,11 @@ class JApplicationSiteTest extends TestCaseDatabase
 
 		// Get a new JApplicationSite instance.
 		$this->class = new JApplicationSite($this->getMockInput(), $config);
+		$this->class->setSession(JFactory::$session);
+		$this->class->setDispatcher($this->getMockDispatcher());
 		TestReflection::setValue('JApplicationCms', 'instances', array('site' => $this->class));
+
+		JFactory::$application = $this->class;
 	}
 
 	/**
@@ -117,14 +121,12 @@ class JApplicationSiteTest extends TestCaseDatabase
 	 */
 	protected function tearDown()
 	{
-		// Reset the dispatcher and application instances.
-		TestReflection::setValue('JEventDispatcher', 'instance', null);
+		// Reset the application instance.
 		TestReflection::setValue('JApplicationCms', 'instances', array());
+		TestReflection::setValue('JPluginHelper', 'plugins', null);
 
 		$_SERVER = $this->backupServer;
-		unset($this->backupServer);
-		unset($config);
-		unset($this->class);
+		unset($this->backupServer, $config, $this->class);
 		$this->restoreFactoryState();
 
 		parent::tearDown();
@@ -158,6 +160,7 @@ class JApplicationSiteTest extends TestCaseDatabase
 	 * @return  void
 	 *
 	 * @since   3.2
+	 * @covers  JApplicationSite::getClientId
 	 */
 	public function testGetClientId()
 	{
@@ -170,6 +173,7 @@ class JApplicationSiteTest extends TestCaseDatabase
 	 * @return  void
 	 *
 	 * @since   3.2
+	 * @covers  JApplicationSite::getName
 	 */
 	public function testGetName()
 	{
@@ -182,6 +186,7 @@ class JApplicationSiteTest extends TestCaseDatabase
 	 * @return  void
 	 *
 	 * @since   3.2
+	 * @covers  JApplicationSite::getMenu
 	 */
 	public function testGetMenu()
 	{
@@ -194,10 +199,10 @@ class JApplicationSiteTest extends TestCaseDatabase
 	 * @return  void
 	 *
 	 * @since   3.2
+	 * @covers  JApplicationSite::getParams
 	 */
 	public function testGetParams()
 	{
-		JFactory::$application = $this->class;
 		$this->class->loadLanguage();
 		$params = $this->class->getParams('com_content');
 
@@ -214,6 +219,7 @@ class JApplicationSiteTest extends TestCaseDatabase
 	 * @return  void
 	 *
 	 * @since   3.2
+	 * @covers  JApplicationSite::getPathway
 	 */
 	public function testGetPathway()
 	{
@@ -226,6 +232,7 @@ class JApplicationSiteTest extends TestCaseDatabase
 	 * @return  void
 	 *
 	 * @since   3.2
+	 * @covers  JApplicationSite::getRouter
 	 */
 	public function testGetRouter()
 	{
@@ -238,6 +245,7 @@ class JApplicationSiteTest extends TestCaseDatabase
 	 * @return  void
 	 *
 	 * @since   3.2
+	 * @covers  JApplicationSite::getTemplate
 	 */
 	public function testGetTemplate()
 	{
@@ -245,7 +253,7 @@ class JApplicationSiteTest extends TestCaseDatabase
 
 		$this->assertInstanceOf('\\Joomla\\Registry\\Registry', $template->params);
 
-		$this->assertEquals('protostar', $template->template);
+		$this->assertEquals('aurora', $template->template);
 	}
 
 	/**
@@ -254,6 +262,7 @@ class JApplicationSiteTest extends TestCaseDatabase
 	 * @return  void
 	 *
 	 * @since   3.2
+	 * @covers  JApplicationSite::isAdmin
 	 */
 	public function testIsAdmin()
 	{
@@ -266,6 +275,7 @@ class JApplicationSiteTest extends TestCaseDatabase
 	 * @return  void
 	 *
 	 * @since   3.2
+	 * @covers  JApplicationSite::isSite
 	 */
 	public function testIsSite()
 	{
@@ -277,7 +287,8 @@ class JApplicationSiteTest extends TestCaseDatabase
 	 *
 	 * @return  void
 	 *
-	 * @since  3.7.0
+	 * @since   3.7.0
+	 * @covers  JApplicationSite::isClient
 	 */
 	public function testIsClient()
 	{
@@ -291,11 +302,10 @@ class JApplicationSiteTest extends TestCaseDatabase
 	 * @return  void
 	 *
 	 * @since   3.2
+	 * @covers  JApplicationSite::render
 	 */
 	public function testRender()
 	{
-		JFactory::$application = $this->class;
-
 		$document = $this->getMockDocument();
 
 		$this->assignMockReturns($document, array('render' => 'JWeb Body'));
@@ -305,7 +315,7 @@ class JApplicationSiteTest extends TestCaseDatabase
 
 		TestReflection::invoke($this->class, 'render');
 
-		$this->assertEquals(array('JWeb Body'), TestReflection::getValue($this->class, 'response')->body);
+		$this->assertEquals('JWeb Body', (string) $this->class->getResponse()->getBody());
 	}
 
 	/**
@@ -314,6 +324,8 @@ class JApplicationSiteTest extends TestCaseDatabase
 	 * @return  void
 	 *
 	 * @since   3.2
+	 * @covers  JApplicationSite::getDetectBrowser
+	 * @covers  JApplicationSite::setDetectBrowser
 	 */
 	public function testSetGetDetectBrowser()
 	{
@@ -328,6 +340,8 @@ class JApplicationSiteTest extends TestCaseDatabase
 	 * @return  void
 	 *
 	 * @since   3.2
+	 * @covers  JApplicationSite::getLanguageFilter
+	 * @covers  JApplicationSite::setLanguageFilter
 	 */
 	public function testSetGetLanguageFilter()
 	{
@@ -342,15 +356,16 @@ class JApplicationSiteTest extends TestCaseDatabase
 	 * @return  void
 	 *
 	 * @since   3.2
+	 * @covers  JApplicationSite::setTemplate
 	 */
 	public function testSetTemplate()
 	{
-		$this->class->setTemplate('beez3');
+		$this->class->setTemplate('aurora');
 
 		$template = $this->class->getTemplate(true);
 
 		$this->assertInstanceOf('\\Joomla\\Registry\\Registry', $template->params);
 
-		$this->assertEquals('beez3', $template->template);
+		$this->assertEquals('aurora', $template->template);
 	}
 }

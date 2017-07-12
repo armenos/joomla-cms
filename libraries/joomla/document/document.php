@@ -9,6 +9,14 @@
 
 defined('JPATH_PLATFORM') or die;
 
+use Joomla\Application\AbstractWebApplication;
+use Joomla\CMS\Document\Factory;
+use Joomla\CMS\Document\FactoryInterface;
+use Joomla\CMS\Document\PreloadManager;
+use Joomla\CMS\Document\PreloadManagerInterface;
+use Joomla\CMS\Document\RendererInterface;
+use Symfony\Component\WebLink\HttpHeaderSerializer;
+
 /**
  * Document class, provides an easy interface to parse and display a document
  *
@@ -215,6 +223,30 @@ class JDocument
 	protected $mediaVersion = null;
 
 	/**
+	 * Factory for creating JDocument API objects
+	 *
+	 * @var    FactoryInterface
+	 * @since  __DEPLOY_VERSION__
+	 */
+	protected $factory;
+
+	/**
+	 * Preload manager
+	 *
+	 * @var    PreloadManagerInterface
+	 * @since  __DEPLOY_VERSION__
+	 */
+	protected $preloadManager = null;
+
+	/**
+	 * The supported preload types
+	 *
+	 * @var    array
+	 * @since  __DEPLOY_VERSION__
+	 */
+	protected $preloadTypes = ['preload', 'dns-prefetch', 'preconnect', 'prefetch', 'prerender'];
+
+	/**
 	 * Class constructor.
 	 *
 	 * @param   array  $options  Associative array of options
@@ -262,6 +294,24 @@ class JDocument
 		{
 			$this->setMediaVersion($options['mediaversion']);
 		}
+
+		if (array_key_exists('factory', $options))
+		{
+			$this->setFactory($options['factory']);
+		}
+		else
+		{
+			$this->setFactory(new Factory);
+		}
+
+		if (array_key_exists('preloadManager', $options))
+		{
+			$this->setPreloadManager($options['preloadManager']);
+		}
+		else
+		{
+			$this->setPreloadManager(new PreloadManager);
+		}
 	}
 
 	/**
@@ -281,42 +331,26 @@ class JDocument
 
 		if (empty(self::$instances[$signature]))
 		{
-			$type  = preg_replace('/[^A-Z0-9_\.-]/i', '', $type);
-			$ntype = null;
-
-			// Determine the path and class
-			$class = 'JDocument' . ucfirst($type);
-
-			if (!class_exists($class))
-			{
-				// @deprecated 4.0 - JDocument objects should be autoloaded instead
-				$path = __DIR__ . '/' . $type . '/' . $type . '.php';
-
-				JLoader::register($class, $path);
-
-				if (class_exists($class))
-				{
-					JLog::add('Non-autoloadable JDocument subclasses are deprecated, support will be removed in 4.0.', JLog::WARNING, 'deprecated');
-				}
-				// Default to the raw format
-				else
-				{
-					$ntype = $type;
-					$class = 'JDocumentRaw';
-				}
-			}
-
-			$instance = new $class($attributes);
-			self::$instances[$signature] = $instance;
-
-			if (!is_null($ntype))
-			{
-				// Set the type to the Document type originally requested
-				$instance->setType($ntype);
-			}
+			self::$instances[$signature] = JFactory::getContainer()->get(FactoryInterface::class)->createDocument($type, $attributes);
 		}
 
 		return self::$instances[$signature];
+	}
+
+	/**
+	 * Set the factory instance
+	 *
+	 * @param   FactoryInterface  $factory  The factory instance
+	 *
+	 * @return  JDocument
+	 *
+	 * @since   __DEPLOY_VERSION__
+	 */
+	public function setFactory(FactoryInterface $factory)
+	{
+		$this->factory = $factory;
+
+		return $this;
 	}
 
 	/**
@@ -449,7 +483,7 @@ class JDocument
 	 * Adds a linked script to the page
 	 *
 	 * @param   string  $url      URL to the linked script.
-	 * @param   array   $options  Array of options. Example: array('version' => 'auto', 'conditional' => 'lt IE 9')
+	 * @param   array   $options  Array of options. Example: array('version' => 'auto', 'conditional' => 'lt IE 9', 'preload' => array('preload'))
 	 * @param   array   $attribs  Array of attributes. Example: array('id' => 'scriptid', 'async' => 'async', 'data-test' => 1)
 	 *
 	 * @return  JDocument instance of $this to allow chaining
@@ -632,7 +666,7 @@ class JDocument
 	 * Adds a linked stylesheet to the page
 	 *
 	 * @param   string  $url      URL to the linked style sheet
-	 * @param   array   $options  Array of options. Example: array('version' => 'auto', 'conditional' => 'lt IE 9')
+	 * @param   array   $options  Array of options. Example: array('version' => 'auto', 'conditional' => 'lt IE 9', 'preload' => array('preload'))
 	 * @param   array   $attribs  Array of attributes. Example: array('id' => 'stylesheet', 'data-test' => 1)
 	 *
 	 * @return  JDocument instance of $this to allow chaining
@@ -643,7 +677,7 @@ class JDocument
 	public function addStyleSheet($url, $options = array(), $attribs = array())
 	{
 		// B/C before 3.7.0
-		if (!is_array($options) && (!is_array($attribs) || $attribs === array()))
+		if (is_string($options))
 		{
 			JLog::add('The addStyleSheet method signature used has changed, use (url, options, attributes) instead.', JLog::WARNING, 'deprecated');
 
@@ -654,7 +688,7 @@ class JDocument
 			// Old mime type parameter.
 			if (!empty($argList[1]))
 			{
-				$attribs['mime'] = $argList[1];
+				$attribs['type'] = $argList[1];
 			}
 
 			// Old media parameter.
@@ -906,6 +940,34 @@ class JDocument
 	public function getMediaVersion()
 	{
 		return $this->mediaVersion;
+	}
+
+	/**
+	 * Set the preload manager
+	 *
+	 * @param   PreloadManagerInterface  $preloadManager  The preload manager service
+	 *
+	 * @return  JDocument instance of $this to allow chaining
+	 *
+	 * @since   __DEPLOY_VERSION__
+	 */
+	public function setPreloadManager(PreloadManagerInterface $preloadManager)
+	{
+		$this->preloadManager = $preloadManager;
+
+		return $this;
+	}
+
+	/**
+	 * Return the preload manager
+	 *
+	 * @return  PreloadManagerInterface
+	 *
+	 * @since   __DEPLOY_VERSION__
+	 */
+	public function getPreloadManager()
+	{
+		return $this->preloadManager;
 	}
 
 	/**
@@ -1165,44 +1227,14 @@ class JDocument
 	 *
 	 * @param   string  $type  The renderer type
 	 *
-	 * @return  JDocumentRenderer
+	 * @return  RendererInterface
 	 *
 	 * @since   11.1
 	 * @throws  RuntimeException
 	 */
 	public function loadRenderer($type)
 	{
-		// New class name format adds the format type to the class name
-		$class = 'JDocumentRenderer' . ucfirst($this->getType()) . ucfirst($type);
-
-		if (!class_exists($class))
-		{
-			// "Legacy" class name structure
-			$class = 'JDocumentRenderer' . $type;
-
-			if (!class_exists($class))
-			{
-				// @deprecated 4.0 - Non-autoloadable class support is deprecated, only log a message though if a file is found
-				$path = __DIR__ . '/' . $this->getType() . '/renderer/' . $type . '.php';
-
-				if (!file_exists($path))
-				{
-					throw new RuntimeException('Unable to load renderer class', 500);
-				}
-
-				JLoader::register($class, $path);
-
-				JLog::add('Non-autoloadable JDocumentRenderer subclasses are deprecated, support will be removed in 4.0.', JLog::WARNING, 'deprecated');
-
-				// If the class still doesn't exist after including the path, we've got issues
-				if (!class_exists($class))
-				{
-					throw new RuntimeException('Unable to load renderer class', 500);
-				}
-			}
-		}
-
-		return new $class($this);
+		return $this->factory->createRenderer($this, $type);
 	}
 
 	/**
@@ -1240,5 +1272,79 @@ class JDocument
 
 		$app->mimeType = $this->_mime;
 		$app->charSet  = $this->_charset;
+
+		// Handle preloading for configured assets in web applications
+		if ($app instanceof AbstractWebApplication)
+		{
+			$this->preloadAssets();
+		}
+	}
+
+	/**
+	 * Generate the Link header for assets configured for preloading
+	 *
+	 * @return  void
+	 *
+	 * @since   __DEPLOY_VERSION__
+	 */
+	protected function preloadAssets()
+	{
+		// Process stylesheets first
+		foreach ($this->_styleSheets as $link => $properties)
+		{
+			if (empty($properties['options']['preload']))
+			{
+				continue;
+			}
+
+			foreach ($properties['options']['preload'] as $preloadMethod)
+			{
+				// Make sure the preload method is supported, special case for `dns-prefetch` to convert it to the right method name
+				if ($preloadMethod === 'dns-prefetch')
+				{
+					$this->getPreloadManager()->dnsPrefetch($link);
+				}
+				elseif (in_array($preloadMethod, $this->preloadTypes))
+				{
+					$this->getPreloadManager()->$preloadMethod($link);
+				}
+				else
+				{
+					throw new InvalidArgumentException(sprintf('The "%s" method is not supported for preloading.', $preloadMethod), 500);
+				}
+			}
+		}
+
+		// Now process scripts
+		foreach ($this->_scripts as $link => $properties)
+		{
+			if (empty($properties['options']['preload']))
+			{
+				continue;
+			}
+
+			foreach ($properties['options']['preload'] as $preloadMethod)
+			{
+				// Make sure the preload method is supported, special case for `dns-prefetch` to convert it to the right method name
+				if ($preloadMethod === 'dns-prefetch')
+				{
+					$this->getPreloadManager()->dnsPrefetch($link);
+				}
+				elseif (in_array($preloadMethod, $this->preloadTypes))
+				{
+					$this->getPreloadManager()->$preloadMethod($link);
+				}
+				else
+				{
+					throw new InvalidArgumentException(sprintf('The "%s" method is not supported for preloading.', $preloadMethod), 500);
+				}
+			}
+		}
+
+		// Check if the manager's provider has links, if so add the Link header
+		if ($links = $this->getPreloadManager()->getLinkProvider()->getLinks())
+		{
+			JFactory::getApplication()->setHeader('Link', (new HttpHeaderSerializer)->serialize($links));
+		}
 	}
 }

@@ -4,7 +4,7 @@
  * @subpackage  Form
  *
  * @copyright   Copyright (C) 2005 - 2017 Open Source Matters, Inc. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
 defined('JPATH_PLATFORM') or die;
@@ -58,7 +58,7 @@ class JFormFieldHelpsite extends JFormFieldList
 		$html = parent::getInput();
 		$button = '<button
 						type="button"
-						class="btn btn-small"
+						class="btn btn-secondary btn-sm"
 						id="helpsite-refresh"
 						rel="' . $this->id . '"
 						showDefault="' . $showDefault . '"

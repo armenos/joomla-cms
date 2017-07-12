@@ -19,14 +19,14 @@ define(['jquery', 'testsRoot/core/spec-setup', 'jasmineJquery'], function ($) {
 			spyOnEvent('#adminForm', 'submit');
 			form.removeChild = jasmine.createSpy('removeChild');
 
-			Joomla.submitform('article.add', form, true);
+			Joomla.submitform('article.add', form, false);
 		});
 
 		it('should assign task to form.task.value', function () {
 			expect(form.task.value).toEqual('article.add');
 		});
-		it('should set attribute novalidate to false', function () {
-			expect($(form)).toHaveAttr('novalidate', 'false');
+		it('should set attribute "novalidate"', function () {
+			expect($(form)).toHaveAttr('novalidate', '');
 		});
 		it('should add input submit button to DOM', function () {
 			expect($('#adminForm')).toContainElement('input[type="submit"]');
@@ -43,9 +43,6 @@ define(['jquery', 'testsRoot/core/spec-setup', 'jasmineJquery'], function ($) {
 	});
 
 	describe('Core Joomla.getOptions', function () {
-		it('should be Joomla.optionsStorage = null', function () {
-			expect(Joomla.optionsStorage).toEqual(null)
-		});
 		it('should return options array Joomla.getOptions("com_foobar")', function () {
 			expect(Joomla.getOptions("com_foobar")).toEqual(["my options"])
 		});
@@ -58,7 +55,9 @@ define(['jquery', 'testsRoot/core/spec-setup', 'jasmineJquery'], function ($) {
 		it('should return default value for not existing key Joomla.getOptions("com_foobar4", 123)', function () {
 			expect(Joomla.getOptions("com_foobar4", 123)).toEqual(123)
 		});
+	});
 
+	describe('Core Joomla.getOptions programmatically', function () {
 		// Test dynamically added options
 		it('should return dynamically added options Joomla.getOptions("com_foobar5")', function () {
 			$('#get-options').append($('<script>', {
@@ -188,7 +187,7 @@ define(['jquery', 'testsRoot/core/spec-setup', 'jasmineJquery'], function ($) {
 		});
 
 		it('renderMessages should render errors inside a div having class alert-error', function () {
-			var $messages = $('div.alert-error').children('div');
+			var $messages = $('div.alert-danger').children('div');
 			expect($messages[0]).toContainText('Error two');
 			expect($messages[1]).toContainText('Error one');
 		});

@@ -52,6 +52,14 @@ class JFormFieldPassword extends JFormField
 	protected $meter = false;
 
 	/**
+	 * Whether to attach a password strength meter or not.
+	 *
+	 * @var    boolean
+	 * @since  __DEPLOY_VERSION__
+	 */
+	protected $force = false;
+
+	/**
 	 * Name of the layout being used to render the field
 	 *
 	 * @var    string
@@ -75,6 +83,7 @@ class JFormFieldPassword extends JFormField
 			case 'threshold':
 			case 'maxLength':
 			case 'meter':
+			case 'force':
 				return $this->$name;
 		}
 
@@ -103,6 +112,7 @@ class JFormFieldPassword extends JFormField
 				break;
 
 			case 'meter':
+			case 'force':
 				$this->meter = ($value === 'true' || $value === $name || $value === '1');
 				break;
 
@@ -116,7 +126,7 @@ class JFormFieldPassword extends JFormField
 	 *
 	 * @param   SimpleXMLElement  $element  The SimpleXMLElement object representing the `<field>` tag for the form field object.
 	 * @param   mixed             $value    The form field value to validate.
-	 * @param   string            $group    The field name group control value. This acts as as an array container for the field.
+	 * @param   string            $group    The field name group control value. This acts as an array container for the field.
 	 *                                      For example if the field has name="foo" and the group value is set to "bar" then the
 	 *                                      full field name would end up being "bar[foo]".
 	 *
@@ -131,11 +141,28 @@ class JFormFieldPassword extends JFormField
 
 		if ($return)
 		{
-			$this->maxLength = $this->element['maxlength'] ? (int) $this->element['maxlength'] : 99;
-			$this->threshold = $this->element['threshold'] ? (int) $this->element['threshold'] : 66;
+			$this->maxLength    = $this->element['maxlength'] ? (int) $this->element['maxlength'] : 99;
+			$this->threshold    = $this->element['threshold'] ? (int) $this->element['threshold'] : 66;
+			$meter              = (string) $this->element['strengthmeter'];
+			$this->meter        = ($meter == 'true' || $meter == 'on' || $meter == '1');
+			$force              = (string) $this->element['forcePassword'];
+			$this->force        = (($force == 'true' || $force == 'on' || $force == '1') && $this->meter === true);
 
-			$meter       = (string) $this->element['strengthmeter'];
-			$this->meter = ($meter == 'true' || $meter == 'on' || $meter == '1');
+			// Set some initial values
+			$this->minLength    = 4;
+			$this->minIntegers  = 0;
+			$this->minSymbols   = 0;
+			$this->minUppercase = 0;
+			$this->minLowercase = 0;
+
+			if (JFactory::getConfig()->get('db') != '')
+			{
+				$this->minLength    = (int) JComponentHelper::getParams('com_users')->get('minimum_length', 4);
+				$this->minIntegers  = (int) JComponentHelper::getParams('com_users')->get('minimum_integers', 0);
+				$this->minSymbols   = (int) JComponentHelper::getParams('com_users')->get('minimum_symbols', 0);
+				$this->minUppercase = (int) JComponentHelper::getParams('com_users')->get('minimum_uppercase', 0);
+				$this->minLowercase = (int) JComponentHelper::getParams('com_users')->get('minimum_lowercase', 0);
+			}
 		}
 
 		return $return;
@@ -170,7 +197,12 @@ class JFormFieldPassword extends JFormField
 			'maxLength' => $this->maxLength,
 			'meter'     => $this->meter,
 			'threshold' => $this->threshold,
-			'meter'     => $this->meter,
+			'minLength'     => $this->minLength,
+			'minIntegers'     => $this->minIntegers,
+			'minSymbols'     => $this->minSymbols,
+			'minUppercase'     => $this->minUppercase,
+			'minLowercase'     => $this->minLowercase,
+			'forcePassword'    => $this->force,
 		);
 
 		return array_merge($data, $extraData);

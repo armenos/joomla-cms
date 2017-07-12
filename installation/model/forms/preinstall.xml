@@ -4,10 +4,8 @@
 		<field
 			name="language"
 			type="installation.language"
-			id="language"
-			class="chzn-select-deselect"
 			label="INSTL_LANGUAGE_LABEL"
-			size="20"
+			id="language"
 			default="en-GB"
 			required="true"
 			onchange="Install.setlanguage();"

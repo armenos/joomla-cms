@@ -40,8 +40,7 @@ abstract class ModMenuHelper
 			->select('l.title_native')
 			->where('(b.client_id = 0 OR b.client_id IS NULL)');
 
-		// Sqlsrv change
-		$query->group('a.id, a.menutype, a.description, a.title, b.menutype,b.language,l.image,l.sef,l.title_native');
+		$query->group('a.id, a.client_id, a.menutype, a.description, a.title, a.asset_id, b.menutype,b.language,l.image,l.sef,l.title_native');
 
 		$db->setQuery($query);
 
@@ -52,7 +51,7 @@ abstract class ModMenuHelper
 		catch (RuntimeException $e)
 		{
 			$result = array();
-			JFactory::getApplication()->enqueueMessage(JText::_('JERROR_AN_ERROR_HAS_OCCURRED'), 'error');
+			JFactory::getApplication()->enqueueMessage(JText::_('JERROR_AN_ERROR_HAS_OCCURRED') . ' ' . $e->getMessage(), 'danger');
 		}
 
 		return $result;
@@ -112,7 +111,7 @@ abstract class ModMenuHelper
 		catch (RuntimeException $e)
 		{
 			$components = array();
-			JFactory::getApplication()->enqueueMessage(JText::_('JERROR_AN_ERROR_HAS_OCCURRED'), 'error');
+			JFactory::getApplication()->enqueueMessage(JText::_('JERROR_AN_ERROR_HAS_OCCURRED'), 'danger');
 		}
 
 		// Parse the list of extensions.
@@ -148,14 +147,14 @@ abstract class ModMenuHelper
 						|| $lang->load($component->element . '.sys', JPATH_ADMINISTRATOR . '/components/' . $component->element, null, false, true);
 					}
 
-					$component->text = $lang->hasKey($component->title) ? JText::_($component->title) : $component->alias;
+					$component->text = JText::_(strtoupper($component->title));
 				}
 			}
 			// Sub-menu level.
 			// Add the submenu link if it is defined.
 			elseif (isset($result[$component->parent_id]) && isset($result[$component->parent_id]->submenu) && !empty($component->link))
 			{
-				$component->text = $lang->hasKey($component->title) ? JText::_($component->title) : $component->alias;
+				$component->text = JText::_(strtoupper($component->title));
 
 				$result[$component->parent_id]->submenu[] = &$component;
 			}

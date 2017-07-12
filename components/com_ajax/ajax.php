@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 /*
  * References
  *  Support plugins in your component
- * - https://docs.joomla.org/Supporting_plugins_in_your_component
+ * - https://docs.joomla.org/Special:MyLanguage/Supporting_plugins_in_your_component
  *
  * Best way for JSON output
  * - https://groups.google.com/d/msg/joomla-dev-cms/WsC0nA9Fixo/Ur-gPqpqh-EJ
@@ -137,11 +137,10 @@ elseif ($input->get('plugin'))
 	$group      = $input->get('group', 'ajax');
 	JPluginHelper::importPlugin($group);
 	$plugin     = ucfirst($input->get('plugin'));
-	$dispatcher = JEventDispatcher::getInstance();
 
 	try
 	{
-		$results = $dispatcher->trigger('onAjax' . $plugin);
+		$results = JFactory::getApplication()->triggerEvent('onAjax' . $plugin);
 	}
 	catch (Exception $e)
 	{

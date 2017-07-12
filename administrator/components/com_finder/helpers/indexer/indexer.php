@@ -4,7 +4,7 @@
  * @subpackage  com_finder
  *
  * @copyright   Copyright (C) 2005 - 2017 Open Source Matters, Inc. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
 defined('_JEXEC') or die;
@@ -102,12 +102,6 @@ abstract class FinderIndexer
 	{
 		// Setup the adapter for the indexer.
 		$serverType = JFactory::getDbo()->getServerType();
-
-		// For `mssql` server types, convert the type to `sqlsrv`
-		if ($serverType === 'mssql')
-		{
-			$serverType = 'sqlsrv';
-		}
 
 		$path = __DIR__ . '/driver/' . $serverType . '.php';
 		$class = 'FinderIndexerDriver' . ucfirst($serverType);

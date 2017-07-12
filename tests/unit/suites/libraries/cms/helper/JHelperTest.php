@@ -4,7 +4,7 @@
  * @subpackage  Helper
  *
  * @copyright   Copyright (C) 2005 - 2017 Open Source Matters, Inc. All rights reserved.
- * @license	    GNU General Public License version 2 or later; see LICENSE
+ * @license	    GNU General Public License version 2 or later; see LICENSE.txt
  */
 
 /**
@@ -54,7 +54,11 @@ class JHelperTest extends TestCaseDatabase
 		$this->saveFactoryState();
 
 		$this->object = new JHelper;
-		JFactory::$application = $this->getMockCmsApp();
+		$mockApp = $this->getMockCmsApp();
+		$mockApp->expects($this->any())
+			->method('getDispatcher')
+			->willReturn($this->getMockDispatcher());
+		JFactory::$application = $mockApp;
 	}
 
 	/**
@@ -90,6 +94,7 @@ class JHelperTest extends TestCaseDatabase
 	 *
 	 * @since   3.2
 	 * @dataProvider  languageIdProvider
+	 * @covers  JHelper::getLanguageId
 	 */
 	public function testGetLanguageId($languageName, $expected)
 	{
@@ -103,6 +108,7 @@ class JHelperTest extends TestCaseDatabase
 	 * @return  void
 	 *
 	 * @since   3.2
+	 * @covers  JHelper::getRowData
 	 */
 	public function testGetRowData()
 	{
@@ -123,6 +129,7 @@ class JHelperTest extends TestCaseDatabase
 	 * @return  void
 	 *
 	 * @since   3.2
+	 * @covers  JHelper::getDataObject
 	 */
 	public function testDataObject()
 	{

@@ -3,7 +3,7 @@
  * @package    Joomla.UnitTest
  *
  * @copyright  Copyright (C) 2005 - 2017 Open Source Matters, Inc. All rights reserved.
- * @license    GNU General Public License version 2 or later; see LICENSE
+ * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
 
 jimport('joomla.filesystem.folder');
@@ -61,8 +61,7 @@ class JLanguageTest extends \PHPUnit\Framework\TestCase
 	protected function tearDown()
 	{
 		JFolder::delete(JPATH_TESTS . '/tmp/language');
-		unset($this->object);
-		unset($this->inspector);
+		unset($this->object, $this->inspector);
 		parent::tearDown();
 	}
 
@@ -230,7 +229,7 @@ class JLanguageTest extends \PHPUnit\Framework\TestCase
 	public function testSetTransliterator()
 	{
 		$function1 = 'phpinfo';
-		$function2 = 'print';
+		$function2 = function () { return; };
 		$lang = new JLanguage('');
 
 		// Note: set -> $funtion1: set returns NULL and get returns $function1
@@ -320,7 +319,7 @@ class JLanguageTest extends \PHPUnit\Framework\TestCase
 	public function testSetPluralSuffixesCallback()
 	{
 		$function1 = 'phpinfo';
-		$function2 = 'print';
+		$function2 = function () { return; };
 		$lang = new JLanguage('');
 
 		$this->assertTrue(
@@ -409,7 +408,7 @@ class JLanguageTest extends \PHPUnit\Framework\TestCase
 	public function testSetIgnoredSearchWordsCallback()
 	{
 		$function1 = 'phpinfo';
-		$function2 = 'print';
+		$function2 = function () { return; };
 		$lang = new JLanguage('');
 
 		$this->assertTrue(
@@ -499,7 +498,7 @@ class JLanguageTest extends \PHPUnit\Framework\TestCase
 	public function testSetLowerLimitSearchWordCallback()
 	{
 		$function1 = 'phpinfo';
-		$function2 = 'print';
+		$function2 = function () { return; };
 		$lang = new JLanguage('');
 
 		$this->assertTrue(
@@ -589,7 +588,7 @@ class JLanguageTest extends \PHPUnit\Framework\TestCase
 	public function testSetUpperLimitSearchWordCallback()
 	{
 		$function1 = 'phpinfo';
-		$function2 = 'print';
+		$function2 = function () { return; };
 		$lang = new JLanguage('');
 
 		$this->assertTrue(
@@ -679,7 +678,7 @@ class JLanguageTest extends \PHPUnit\Framework\TestCase
 	public function testSetSearchDisplayedCharactersNumberCallback()
 	{
 		$function1 = 'phpinfo';
-		$function2 = 'print';
+		$function2 = function () { return; };
 		$lang = new JLanguage('');
 
 		$this->assertTrue(
@@ -739,22 +738,22 @@ class JLanguageTest extends \PHPUnit\Framework\TestCase
 	public function testExists()
 	{
 		$this->assertFalse(
-			JLanguage::exists(null)
+			JLanguageHelper::exists(null)
 		);
 
 		$basePath = __DIR__ . '/data';
 
 		$this->assertTrue(
-			JLanguage::exists('en-GB', $basePath)
+			JLanguageHelper::exists('en-GB', $basePath)
 		);
 
 		$this->assertFalse(
-			JLanguage::exists('es-ES', $basePath)
+			JLanguageHelper::exists('es-ES', $basePath)
 		);
 	}
 
 	/**
-	 * Test...
+	 * Test parsing of language ini files
 	 *
 	 * @return void
 	 */
@@ -774,7 +773,11 @@ class JLanguageTest extends \PHPUnit\Framework\TestCase
 			'Line: ' . __LINE__ . ' test that the strings were parsed correctly.'
 		);
 
-		$strings = $this->inspector->parse(__DIR__ . '/data/bad.ini');
+		/**
+		 * suppressor used as we know this will generate a warning message
+		 * syntax error, unexpected BOOL_TRUE in
+		 */
+		$strings = @$this->inspector->parse(__DIR__ . '/data/bad.ini');
 
 		$this->assertEquals(
 			$strings,

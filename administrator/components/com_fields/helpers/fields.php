@@ -91,12 +91,7 @@ class FieldsHelper
 		if (self::$fieldsCache === null)
 		{
 			// Load the model
-			JLoader::import('joomla.application.component.model');
-			JModelLegacy::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_fields/models', 'FieldsModel');
-
-			self::$fieldsCache = JModelLegacy::getInstance('Fields', 'FieldsModel', array(
-				'ignore_request' => true)
-			);
+			self::$fieldsCache = new \Joomla\Component\Fields\Administrator\Model\Fields(array('ignore_request' => true));
 
 			self::$fieldsCache->setState('filter.state', 1);
 			self::$fieldsCache->setState('list.limit', 0);
@@ -142,7 +137,7 @@ class FieldsHelper
 		{
 			if (self::$fieldCache === null)
 			{
-				self::$fieldCache = JModelLegacy::getInstance('Field', 'FieldsModel', array('ignore_request' => true));
+				self::$fieldCache = new \Joomla\Component\Fields\Administrator\Model\Field(array('ignore_request' => true));
 			}
 
 			$fieldIds = array_map(
@@ -189,21 +184,25 @@ class FieldsHelper
 				{
 					JPluginHelper::importPlugin('fields');
 
-					$dispatcher = JEventDispatcher::getInstance();
-
-					// Event allow plugins to modfify the output of the field before it is prepared
-					$dispatcher->trigger('onCustomFieldsBeforePrepareField', array($context, $item, &$field));
+					/*
+					 * On before field prepare
+					 * Event allow plugins to modfify the output of the field before it is prepared
+					 */
+					JFactory::getApplication()->triggerEvent('onCustomFieldsBeforePrepareField', array($context, $item, &$field));
 
 					// Gathering the value for the field
-					$value = $dispatcher->trigger('onCustomFieldsPrepareField', array($context, $item, &$field));
+					$value = JFactory::getApplication()->triggerEvent('onCustomFieldsPrepareField', array($context, $item, &$field));
 
 					if (is_array($value))
 					{
 						$value = implode($value, ' ');
 					}
 
-					// Event allow plugins to modfify the output of the prepared field
-					$dispatcher->trigger('onCustomFieldsAfterPrepareField', array($context, $item, $field, &$value));
+					/*
+					 * On after field render
+					 * Event allows plugins to modify the output of the prepared field
+					 */
+					JFactory::getApplication()->triggerEvent('onCustomFieldsAfterPrepareField', array($context, $item, $field, &$value));
 
 					// Assign the value
 					$field->value = $value;
@@ -243,7 +242,7 @@ class FieldsHelper
 		 */
 		if ($parts = self::extract($context))
 		{
-			// Trying to render the layout on the component fom the context
+			// Trying to render the layout on the component from the context
 			$value = JLayoutHelper::render($layoutFile, $displayData, null, array('component' => $parts[0], 'client' => 0));
 		}
 
@@ -276,6 +275,8 @@ class FieldsHelper
 		{
 			return true;
 		}
+
+		$context = $parts[0] . '.' . $parts[1];
 
 		// When no fields available return here
 		$fields = self::getFields($parts[0] . '.' . $parts[1], new JObject);
@@ -400,13 +401,24 @@ class FieldsHelper
 			$fieldsPerGroup[$field->group_id][] = $field;
 		}
 
-		// On the front, sometimes the admin fields path is not included
-		JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_fields/tables');
+		$model = new Joomla\Component\Fields\Administrator\Model\Groups(array('ignore_request' => true));
+		$model->setState('filter.context', $context);
 
-		// Looping trough the groups
-		foreach ($fieldsPerGroup as $group_id => $groupFields)
+		/**
+		 * $model->getItems() would only return existing groups, but we also
+		 * have the 'default' group with id 0 which is not in the database,
+		 * so we create it virtually here.
+		 */
+		$defaultGroup = new \stdClass;
+		$defaultGroup->id = 0;
+		$defaultGroup->title = '';
+		$defaultGroup->description = '';
+		$iterateGroups = array_merge(array($defaultGroup), $model->getItems());
+
+		// Looping through the groups
+		foreach ($iterateGroups as $group)
 		{
-			if (!$groupFields)
+			if (empty($fieldsPerGroup[$group->id]))
 			{
 				continue;
 			}
@@ -414,61 +426,44 @@ class FieldsHelper
 			// Defining the field set
 			/** @var DOMElement $fieldset */
 			$fieldset = $fieldsNode->appendChild(new DOMElement('fieldset'));
-			$fieldset->setAttribute('name', 'fields-' . $group_id);
+			$fieldset->setAttribute('name', 'fields-' . $group->id);
 			$fieldset->setAttribute('addfieldpath', '/administrator/components/' . $component . '/models/fields');
 			$fieldset->setAttribute('addrulepath', '/administrator/components/' . $component . '/models/rules');
 
-			$label       = '';
-			$description = '';
+			$label       = $group->title;
+			$description = $group->description;
 
-			if ($group_id)
+			if (!$label)
 			{
-				$group = JTable::getInstance('Group', 'FieldsTable');
-				$group->load($group_id);
+				$key = strtoupper($component . '_FIELDS_' . $section . '_LABEL');
 
-				if ($group->id)
+				if (!JFactory::getLanguage()->hasKey($key))
 				{
-					$label       = $group->title;
-					$description = $group->description;
+					$key = 'JGLOBAL_FIELDS';
 				}
+
+				$label = $key;
 			}
 
-			if (!$label || !$description)
+			if (!$description)
 			{
-				$lang = JFactory::getLanguage();
+				$key = strtoupper($component . '_FIELDS_' . $section . '_DESC');
 
-				if (!$label)
+				if (JFactory::getLanguage()->hasKey($key))
 				{
-					$key = strtoupper($component . '_FIELDS_' . $section . '_LABEL');
-
-					if (!$lang->hasKey($key))
-					{
-						$key = 'JGLOBAL_FIELDS';
-					}
-
-					$label = $key;
-				}
-
-				if (!$description)
-				{
-					$key = strtoupper($component . '_FIELDS_' . $section . '_DESC');
-
-					if ($lang->hasKey($key))
-					{
-						$description = $key;
-					}
+					$description = $key;
 				}
 			}
 
 			$fieldset->setAttribute('label', $label);
 			$fieldset->setAttribute('description', strip_tags($description));
 
-			// Looping trough the fields for that context
-			foreach ($groupFields as $field)
+			// Looping through the fields for that context
+			foreach ($fieldsPerGroup[$group->id] as $field)
 			{
 				try
 				{
-					JEventDispatcher::getInstance()->trigger('onCustomFieldsPrepareDom', array($field, $fieldset, $form));
+					JFactory::getApplication()->triggerEvent('onCustomFieldsPrepareDom', array($field, $fieldset, $form));
 
 					/*
 					 * If the field belongs to an assigned_cat_id but the assigned_cat_ids in the data
@@ -485,7 +480,7 @@ class FieldsHelper
 				}
 			}
 
-			// When he field set is empty, then remove it
+			// When the field set is empty, then remove it
 			if (!$fieldset->hasChildNodes())
 			{
 				$fieldsNode->removeChild($fieldset);
@@ -495,16 +490,16 @@ class FieldsHelper
 		// Loading the XML fields string into the form
 		$form->load($xml->saveXML());
 
-		$model = JModelLegacy::getInstance('Field', 'FieldsModel', array('ignore_request' => true));
+		$model = new \Joomla\Component\Fields\Administrator\Model\Field(array('ignore_request' => true));
 
-		if ((!isset($data->id) || !$data->id) && JFactory::getApplication()->input->getCmd('controller') == 'config.display.modules'
+		if ((!isset($data->id) || !$data->id) && JFactory::getApplication()->input->getCmd('controller') == 'modules'
 			&& JFactory::getApplication()->isClient('site'))
 		{
 			// Modules on front end editing don't have data and an id set
 			$data->id = JFactory::getApplication()->input->getInt('id');
 		}
 
-		// Looping trough the fields again to set the value
+		// Looping through the fields again to set the value
 		if (!isset($data->id) || !$data->id)
 		{
 			return true;
@@ -725,7 +720,7 @@ class FieldsHelper
 	public static function getFieldTypes()
 	{
 		JPluginHelper::importPlugin('fields');
-		$eventData = JEventDispatcher::getInstance()->trigger('onCustomFieldsGetTypes');
+		$eventData = JFactory::getApplication()->triggerEvent('onCustomFieldsGetTypes');
 
 		$data = array();
 

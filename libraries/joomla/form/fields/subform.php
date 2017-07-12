@@ -203,10 +203,10 @@ class JFormFieldSubform extends JFormField
 			$this->value = json_decode($this->value, true);
 		}
 
-		if (!$this->formsource)
+		if (!$this->formsource && $element->form)
 		{
 			// Set the formsource parameter from the content of the node
-			$this->formsource = $element->children()->saveXML();
+			$this->formsource = $element->form->saveXML();
 		}
 
 		return true;
@@ -295,7 +295,7 @@ class JFormFieldSubform extends JFormField
 		// for allow to submit an empty value
 		if ($this->multiple)
 		{
-			$html = '<input name="' . $this->name . '" type="hidden" value="" />' . $html;
+			$html = '<input name="' . $this->name . '" type="hidden" value="">' . $html;
 		}
 
 		return $html;

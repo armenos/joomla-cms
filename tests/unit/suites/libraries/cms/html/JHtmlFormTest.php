@@ -4,7 +4,7 @@
  * @subpackage  HTML
  *
  * @copyright   Copyright (C) 2005 - 2017 Open Source Matters, Inc. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
 /**
@@ -79,7 +79,7 @@ class JHtmlFormTest extends TestCase
 
 		$this->assertThat(
 			JHtmlForm::token(),
-			$this->equalTo('<input type="hidden" name="' . $token . '" value="1" />')
+			$this->equalTo('<input type="hidden" name="' . $token . '" value="1">')
 		);
 	}
 }
